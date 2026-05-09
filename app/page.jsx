@@ -2,21 +2,34 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
 // ============================================================
-// THEME & CONSTANTS
+// FALLEN ANGEL NOIR — THEME & CONSTANTS (legacy keys preserved)
 // ============================================================
 const COLORS = {
-  gold: "#C9A84C",
-  goldLight: "#E8C96A",
-  goldDark: "#A07830",
-  brown: "#3B2314",
-  brownMid: "#5C3520",
-  beige: "#F5EDD8",
-  beigeLight: "#FAF5EA",
-  black: "#0D0A08",
-  white: "#FDFAF5",
-  textDark: "#1A1008",
-  textMid: "#6B4C2A",
-  textLight: "#A08060",
+  voidBlack: "#050505",
+  obsidian: "#0E0E10",
+  blood: "#7A0C16",
+  neon: "#B31224",
+  silver: "#C9CCD1",
+  ivory: "#ECE7DF",
+  smoke: "#6E6E73",
+  glass: "rgba(255,255,255,0.05)",
+  // Aliases — keep existing references working across the SPA
+  red: "#7A0C16",
+  crimson: "#B31224",
+  gold: "#C9CCD1",
+  goldLight: "#ECE7DF",
+  goldDark: "#6E6E73",
+  brown: "#0E0E10",
+  brownMid: "#141418",
+  cream: "#ECE7DF",
+  beige: "#ECE7DF",
+  beigeLight: "#F2EDE6",
+  black: "#050505",
+  white: "#ECE7DF",
+  textDark: "#050505",
+  muted: "#6E6E73",
+  textMid: "#8B8B90",
+  textLight: "#C9CCD1",
 };
 
 const PHONE1 = "9205597537";
@@ -26,17 +39,181 @@ const WA_BOOK = encodeURIComponent("Hi! I'd like to book a table at Cafe Desire.
 const ADDRESS = "Holambi Khurd, Near DIRD College, Opposite C.L. Indian Public School, Delhi - 110082";
 
 // ============================================================
-// FONT LOADER
+// CUSTOM CURSOR (pointer devices only)
 // ============================================================
-const FontLoader = () => {
+const CustomCursor = () => {
+  const dotRef = useRef(null);
+  const ringRef = useRef(null);
+  const cursor = useRef({
+    dx: 0,
+    dy: 0,
+    rx: 0,
+    ry: 0,
+    mtx: 0,
+    mty: 0,
+  });
+  const rafId = useRef(0);
+
   useEffect(() => {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap";
-    document.head.appendChild(link);
+    const mq = window.matchMedia("(pointer: fine)");
+    if (!mq.matches) return;
+
+    const root = document.documentElement;
+    root.classList.add("cursor-lounge");
+
+    const lerp = (a, b, t) => a + (b - a) * t;
+
+    const loop = () => {
+      const c = cursor.current;
+      c.dx = lerp(c.dx, c.mtx, 0.42);
+      c.dy = lerp(c.dy, c.mty, 0.42);
+      c.rx = lerp(c.rx, c.mtx, 0.11);
+      c.ry = lerp(c.ry, c.mty, 0.11);
+      if (dotRef.current)
+        dotRef.current.style.transform = `translate(${c.dx}px, ${c.dy}px) translate(-50%, -50%)`;
+      if (ringRef.current)
+        ringRef.current.style.transform = `translate(${c.rx}px, ${c.ry}px) translate(-50%, -50%)`;
+      rafId.current = requestAnimationFrame(loop);
+    };
+
+    const onMove = (e) => {
+      const magEl = e.target.closest(".cursor-magnetic");
+      const hoverEl = e.target.closest(
+        'a[href], button, [role="button"], input, select, textarea, label'
+      );
+      let tx = e.clientX;
+      let ty = e.clientY;
+      if (magEl) {
+        const host = magEl.closest("button, a") || magEl;
+        const r = host.getBoundingClientRect();
+        tx = lerp(e.clientX, r.left + r.width / 2, 0.11);
+        ty = lerp(e.clientY, r.top + r.height / 2, 0.11);
+      }
+      cursor.current.mtx = tx;
+      cursor.current.mty = ty;
+      if (ringRef.current) {
+        ringRef.current.dataset.active = hoverEl ? "1" : "0";
+        ringRef.current.dataset.glow =
+          hoverEl && hoverEl.matches("button, input, select, textarea, .btn-gold, .btn-outline")
+            ? "1"
+            : hoverEl?.closest("button, .btn-gold, .btn-outline")
+              ? "1"
+              : "0";
+      }
+    };
+
+    rafId.current = requestAnimationFrame(loop);
+    window.addEventListener("mousemove", onMove, { passive: true });
+
+    return () => {
+      cancelAnimationFrame(rafId.current);
+      window.removeEventListener("mousemove", onMove);
+      root.classList.remove("cursor-lounge");
+    };
   }, []);
-  return null;
+
+  return (
+    <>
+      <div ref={ringRef} className="lounge-cursor-ring" aria-hidden />
+      <div ref={dotRef} className="lounge-cursor-dot" aria-hidden />
+    </>
+  );
 };
+
+// ============================================================
+// FALLEN ANGEL WINGS — subtle symbolic backdrop
+// ============================================================
+const FallenAngelWings = ({ shiftX = 0, shiftY = 0 }) => (
+  <div
+    className="fallen-wings-wrap"
+    style={{
+      position: "absolute",
+      inset: 0,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      pointerEvents: "none",
+      transform: `translate(${shiftX}px, ${shiftY}px) scale(1.02)`,
+      transition: "transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
+    }}
+  >
+    <svg
+      className="fallen-wings-svg"
+      viewBox="0 0 1200 600"
+      preserveAspectRatio="xMidYMid slice"
+      style={{
+        width: "min(140vw, 1600px)",
+        maxHeight: "85vh",
+        opacity: 0.55,
+        mixBlendMode: "screen",
+        filter: "blur(1.2px)",
+      }}
+      aria-hidden
+    >
+      <defs>
+        <linearGradient id="wingFeatherL" x1="0%" y1="50%" x2="100%" y2="50%">
+          <stop offset="0%" stopColor="rgba(236,231,223,0)" />
+          <stop offset="42%" stopColor="rgba(201,204,209,0.09)" />
+          <stop offset="100%" stopColor="rgba(179,18,36,0.14)" />
+        </linearGradient>
+        <linearGradient id="wingFeatherR" x1="100%" y1="50%" x2="0%" y2="50%">
+          <stop offset="0%" stopColor="rgba(236,231,223,0)" />
+          <stop offset="42%" stopColor="rgba(201,204,209,0.09)" />
+          <stop offset="100%" stopColor="rgba(179,18,36,0.14)" />
+        </linearGradient>
+        <radialGradient id="wingCore" cx="50%" cy="40%" r="55%">
+          <stop offset="0%" stopColor="rgba(236,231,223,0.07)" />
+          <stop offset="70%" stopColor="rgba(14,14,16,0)" />
+        </radialGradient>
+      </defs>
+      <ellipse cx="600" cy="280" rx="180" ry="220" fill="url(#wingCore)" />
+      <path
+        className="wing-path wing-path-left"
+        fill="none"
+        stroke="url(#wingFeatherL)"
+        strokeWidth="1.25"
+        d="M 600 520 C 460 460 260 340 220 200 C 200 130 238 82 296 118 C 350 154 392 268 442 362 C 480 438 548 492 598 538"
+      />
+      <path
+        className="wing-path wing-path-left wing-echo"
+        fill="none"
+        stroke="rgba(201,204,209,0.06)"
+        strokeWidth="0.8"
+        d="M 585 498 C 420 418 248 296 216 174 C 200 118 258 94 322 154 C 390 226 452 382 582 526"
+      />
+      <path
+        className="wing-path wing-path-right"
+        fill="none"
+        stroke="url(#wingFeatherR)"
+        strokeWidth="1.25"
+        d="M 600 520 C 740 460 940 340 980 200 C 1000 130 962 82 904 118 C 850 154 808 268 758 362 C 720 438 652 492 602 538"
+      />
+      <path
+        className="wing-path wing-path-right wing-echo"
+        fill="none"
+        stroke="rgba(201,204,209,0.06)"
+        strokeWidth="0.8"
+        d="M 615 498 C 780 418 952 296 984 174 C 1000 118 942 94 878 154 C 810 226 748 382 618 526"
+      />
+    </svg>
+    <div
+      className="wing-particulate"
+      style={{
+        position: "absolute",
+        inset: "-10% -5%",
+        backgroundImage: `
+          radial-gradient(1px 1px at 20% 30%, rgba(236,231,223,0.15), transparent),
+          radial-gradient(1px 1px at 70% 60%, rgba(201,204,209,0.12), transparent),
+          radial-gradient(1.5px 1.5px at 45% 80%, rgba(179,18,36,0.18), transparent)
+        `,
+        backgroundSize: "100% 100%",
+        opacity: 0.35,
+        animation: "wingDust 22s linear infinite",
+        mixBlendMode: "screen",
+      }}
+    />
+  </div>
+);
 
 // ============================================================
 // GLOBAL STYLES
@@ -45,54 +222,96 @@ const GlobalStyle = () => (
   <style>{`
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body { 
-      background: ${COLORS.black}; 
-      color: ${COLORS.beige}; 
-      font-family: 'Jost', sans-serif;
+    body {
+      background: ${COLORS.black};
+      color: ${COLORS.ivory};
+      font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
       overflow-x: hidden;
+      background-image:
+        radial-gradient(ellipse 130% 70% at 50% -25%, rgba(122, 12, 22, 0.38), transparent 55%),
+        radial-gradient(ellipse 60% 45% at 100% 10%, rgba(179, 18, 36, 0.12), transparent 50%),
+        linear-gradient(180deg, ${COLORS.voidBlack} 0%, ${COLORS.obsidian} 48%, ${COLORS.voidBlack} 100%);
     }
+    ::selection { background: rgba(179, 18, 36, 0.35); color: ${COLORS.ivory}; }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: ${COLORS.black}; }
-    ::-webkit-scrollbar-thumb { background: ${COLORS.gold}; border-radius: 3px; }
-    
-    .font-display { font-family: 'Cormorant Garamond', serif; }
-    .font-playfair { font-family: 'Playfair Display', serif; }
-    
+    ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, ${COLORS.silver}, ${COLORS.neon}); border-radius: 3px; }
+
+    .font-display { font-family: var(--font-heading), "Cormorant Garamond", serif; }
+    .font-logo { font-family: var(--font-logo), "Cinzel", serif; }
+
+    html.cursor-lounge *, html.cursor-lounge *::before, html.cursor-lounge *::after {
+      cursor: none !important;
+    }
+    .lounge-cursor-dot {
+      position: fixed; top: 0; left: 0; width: 5px; height: 5px;
+      border-radius: 50%; background: rgba(236,231,223,0.92);
+      box-shadow: 0 0 12px rgba(201,204,209,0.45);
+      z-index: 100000; pointer-events: none; mix-blend-mode: normal;
+    }
+    .lounge-cursor-ring {
+      position: fixed; top: 0; left: 0; width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(201,204,209,0.35);
+      z-index: 99999; pointer-events: none;
+      transition:
+        width 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        height 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.45s ease,
+        box-shadow 0.45s ease;
+    }
+    .lounge-cursor-ring[data-active="1"] {
+      width: 44px; height: 44px;
+      border-color: rgba(201,204,209,0.55);
+    }
+    .lounge-cursor-ring[data-glow="1"] {
+      box-shadow:
+        0 0 0 1px rgba(179, 18, 36, 0.35),
+        0 0 28px rgba(179, 18, 36, 0.22),
+        inset 0 0 20px rgba(179, 18, 36, 0.08);
+    }
+    @media (max-width: 768px), (pointer: coarse) {
+      .lounge-cursor-dot, .lounge-cursor-ring { display: none !important; }
+    }
+
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(40px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(36px); filter: blur(10px); }
+      to { opacity: 1; transform: translateY(0); filter: blur(0); }
     }
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
     @keyframes scaleIn {
-      from { opacity: 0; transform: scale(0.9); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    @keyframes slideLeft {
-      from { opacity: 0; transform: translateX(-40px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes slideRight {
-      from { opacity: 0; transform: translateX(40px); }
-      to { opacity: 1; transform: translateX(0); }
+      from { opacity: 0; transform: scale(0.94); filter: blur(8px); }
+      to { opacity: 1; transform: scale(1); filter: blur(0); }
     }
     @keyframes pulse {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(201,168,76,0.4); }
-      50% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(201,168,76,0); }
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(179, 18, 36, 0.35); }
+      50% { transform: scale(1.06); box-shadow: 0 0 0 14px rgba(179, 18, 36, 0); }
     }
-    @keyframes heroZoom {
-      from { transform: scale(1.05); }
-      to { transform: scale(1.15); }
+    @keyframes heroGlow {
+      0% { opacity: 0.55; transform: scale(1) translateZ(0); }
+      50% { opacity: 0.85; transform: scale(1.04) translateZ(0); }
+      100% { opacity: 0.6; transform: scale(1.08) translateZ(0); }
     }
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
+    @keyframes gradientDrift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes shimmerSilver {
+      0% { background-position: -200% 40%; opacity: 0.45; }
+      100% { background-position: 200% 40%; opacity: 0.9; }
     }
     @keyframes float {
       0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-8px); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes smoke {
+      0% { transform: translateY(0) scale(1); opacity: 0.08; }
+      40% { opacity: 0.22; }
+      100% { transform: translateY(-140px) scale(1.2); opacity: 0; }
     }
     @keyframes spin {
       from { transform: rotate(0deg); }
@@ -102,80 +321,183 @@ const GlobalStyle = () => (
       from { opacity: 0; transform: translateX(100%); }
       to { opacity: 1; transform: translateX(0); }
     }
-    @keyframes ripple {
-      0% { transform: scale(0); opacity: 0.6; }
-      100% { transform: scale(4); opacity: 0; }
+    @keyframes wingPulse {
+      0%, 100% { opacity: 0.5; stroke-opacity: 0.45; }
+      50% { opacity: 0.82; stroke-opacity: 0.72; }
     }
-    
-    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
-    
-    .gold-border { border: 1px solid ${COLORS.gold}; }
-    .gold-text { color: ${COLORS.gold}; }
-    .gold-bg { background: ${COLORS.gold}; }
-    
+    @keyframes wingDust {
+      from { transform: translateY(0) rotate(0deg); }
+      to { transform: translateY(-28px) rotate(2deg); }
+    }
+
+    .wing-path-left, .wing-path-right { stroke-dasharray: 520 80; stroke-dashoffset: 0; animation: wingPulse 14s ease-in-out infinite alternate; }
+    .wing-path-left.wing-path { animation-duration: 16s; }
+    .fallen-wings-svg .wing-echo { animation: wingPulse 20s ease-in-out infinite alternate; opacity: 0.7; }
+
+    .hero-gradient-drift {
+      background-size: 220% 220%;
+      animation: gradientDrift 28s ease-in-out infinite;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(38px);
+      filter: blur(12px);
+      transition:
+        opacity 1.05s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 1.05s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 1.05s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: opacity, transform, filter;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+
     .btn-gold {
-      background: linear-gradient(135deg, ${COLORS.goldDark}, ${COLORS.gold}, ${COLORS.goldLight});
-      color: ${COLORS.black};
-      font-family: 'Jost', sans-serif;
+      font-family: var(--font-body), sans-serif;
       font-weight: 600;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
       font-size: 11px;
-      padding: 14px 28px;
-      border: none;
+      padding: 15px 30px;
+      color: ${COLORS.ivory};
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(179,18,36,0.42);
+      box-shadow:
+        0 0 0 1px rgba(201,204,209,0.08) inset,
+        0 12px 40px rgba(0,0,0,0.45),
+        0 0 32px rgba(122,12,22,0.18);
+      backdrop-filter: blur(18px);
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      transition: all 0.3s ease;
+      transition:
+        transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.45s ease;
     }
-    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,168,76,0.4); }
-    
+    .btn-gold::after {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(105deg,
+        transparent 0%,
+        rgba(236,231,223,0.08) 40%,
+        rgba(236,231,223,0.22) 50%,
+        rgba(236,231,223,0.08) 60%,
+        transparent 100%);
+      background-size: 260% 100%;
+      animation: shimmerSilver 4.5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      mix-blend-mode: overlay;
+    }
+    .btn-gold:hover::after { opacity: 1; }
+    .btn-gold:hover {
+      transform: translateY(-3px);
+      border-color: rgba(236,231,223,0.35);
+      box-shadow:
+        0 0 0 1px rgba(201,204,209,0.12) inset,
+        0 18px 50px rgba(0,0,0,0.55),
+        0 0 48px rgba(179,18,36,0.35);
+    }
+
     .btn-outline {
-      background: transparent;
-      color: ${COLORS.gold};
-      border: 1px solid ${COLORS.gold};
-      font-family: 'Jost', sans-serif;
+      background: rgba(255,255,255,0.02);
+      color: ${COLORS.ivory};
+      border: 1px solid rgba(201,204,209,0.22);
+      font-family: var(--font-body), sans-serif;
       font-weight: 500;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
       font-size: 11px;
-      padding: 13px 27px;
+      padding: 14px 28px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      backdrop-filter: blur(14px);
+      transition:
+        transform 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.55s ease,
+        border-color 0.45s ease,
+        color 0.35s ease;
     }
-    .btn-outline:hover { background: ${COLORS.gold}; color: ${COLORS.black}; transform: translateY(-2px); }
-    
+    .btn-outline:hover {
+      transform: translateY(-3px);
+      border-color: rgba(179,18,36,0.42);
+      color: ${COLORS.silver};
+      box-shadow:
+        0 0 0 1px rgba(201,204,209,0.12) inset,
+        0 16px 40px rgba(0,0,0,0.45),
+        0 0 28px rgba(179,18,36,0.22);
+    }
+
     .section-label {
-      font-family: 'Jost', sans-serif;
+      font-family: var(--font-body), sans-serif;
       font-size: 10px;
-      letter-spacing: 0.3em;
+      letter-spacing: 0.38em;
       text-transform: uppercase;
-      color: ${COLORS.gold};
+      color: rgba(201,204,209,0.78);
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
     .section-label::before, .section-label::after {
-      content: '';
-      width: 40px;
+      content: "";
+      flex: 0 0 40px;
       height: 1px;
-      background: ${COLORS.gold};
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(201,204,209,0.55),
+        rgba(179,18,36,0.65),
+        transparent);
     }
-    
+
     .card-hover {
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+      transition:
+        transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+        filter 0.55s ease;
+      backdrop-filter: blur(22px);
     }
     .card-hover:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      transform: translateY(-12px);
+      filter: saturate(1.05);
+      box-shadow:
+        0 26px 70px rgba(0,0,0,0.65),
+        0 0 0 1px rgba(201,204,209,0.22),
+        0 0 40px rgba(122,12,22,0.22);
     }
-    
+
     input:focus, textarea:focus, select:focus {
       outline: none;
-      border-color: ${COLORS.gold} !important;
+      border-color: rgba(201,204,209,0.55) !important;
+      box-shadow: 0 0 0 1px rgba(179,18,36,0.35), 0 0 26px rgba(179,18,36,0.12) !important;
     }
-    
+
+    .footer-noir-dust {
+      pointer-events: none;
+      opacity: 0.22;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, rgba(236,231,223,0.25), transparent),
+        radial-gradient(1.2px 1.2px at 80% 40%, rgba(201,204,209,0.15), transparent),
+        radial-gradient(1px 1px at 50% 80%, rgba(179,18,36,0.2), transparent);
+      animation: smoke 28s linear infinite;
+      mix-blend-mode: screen;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .hero-gradient-drift { animation: none !important; }
+    }
+
     @media (max-width: 768px) {
       .hide-mobile { display: none !important; }
     }
@@ -203,10 +525,24 @@ const useScrollReveal = () => {
 // DIVIDER COMPONENT
 // ============================================================
 const GoldDivider = ({ style = {} }) => (
-  <div style={{ display: "flex", alignItems: "center", gap: 12, ...style }}>
-    <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, transparent, ${COLORS.gold})` }} />
-    <span style={{ color: COLORS.gold, fontSize: 18 }}>✦</span>
-    <div style={{ flex: 1, height: 1, background: `linear-gradient(to left, transparent, ${COLORS.gold})` }} />
+  <div style={{ display: "flex", alignItems: "center", gap: 14, ...style }}>
+    <div
+      style={{
+        flex: 1,
+        height: 1,
+        background: `linear-gradient(to right, transparent, ${COLORS.neon}, ${COLORS.silver})`,
+        opacity: 0.85,
+      }}
+    />
+    <span style={{ color: COLORS.silver, fontSize: 13, opacity: 0.9, letterSpacing: "0.4em" }}>✦</span>
+    <div
+      style={{
+        flex: 1,
+        height: 1,
+        background: `linear-gradient(to left, transparent, ${COLORS.neon}, ${COLORS.silver})`,
+        opacity: 0.85,
+      }}
+    />
   </div>
 );
 
@@ -237,52 +573,104 @@ const Navbar = ({ page, setPage }) => {
     <>
       <nav style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000,
-        padding: scrolled ? "12px 40px" : "20px 40px",
-        background: scrolled ? "rgba(13,10,8,0.97)" : "transparent",
-        backdropFilter: scrolled ? "blur(20px)" : "none",
-        borderBottom: scrolled ? `1px solid rgba(201,168,76,0.15)` : "none",
-        transition: "all 0.4s ease",
+        padding: scrolled ? "10px clamp(18px, 4vw, 40px)" : "18px clamp(18px, 4vw, 40px)",
+        background: scrolled ? "rgba(5,5,5,0.62)" : "transparent",
+        backdropFilter: scrolled ? "blur(24px) saturate(1.08)" : "blur(10px)",
+        WebkitBackdropFilter: scrolled ? "blur(24px) saturate(1.08)" : "blur(10px)",
+        borderBottom: scrolled ? `1px solid rgba(179,18,36,0.22)` : "1px solid transparent",
+        boxShadow: scrolled ? "0 18px 50px rgba(0,0,0,0.55), inset 0 -1px 0 rgba(201,204,209,0.06)" : "none",
+        transition: "padding 0.65s cubic-bezier(0.22,1,0.36,1), background 0.55s ease, border-color 0.45s ease",
         display: "flex", alignItems: "center", justifyContent: "space-between",
       }}>
         {/* Logo */}
-        <div onClick={() => setPage("home")} style={{ cursor: "pointer", animation: "fadeIn 1s ease" }}>
-          <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: 28, fontWeight: 300, color: COLORS.gold, letterSpacing: "0.05em", lineHeight: 1 }}>
-            Café Desire
+        <div
+          className="cursor-magnetic"
+          onClick={() => setPage("home")}
+          role="presentation"
+          style={{ cursor: "pointer", animation: "fadeIn 1.2s cubic-bezier(0.22,1,0.36,1)" }}
+        >
+          <div
+            className="font-logo"
+            style={{
+              fontSize: 22,
+              fontWeight: 500,
+              letterSpacing: "0.42em",
+              lineHeight: 1.05,
+              color: COLORS.ivory,
+              textShadow: `0 0 28px rgba(179,18,36,0.25), 0 0 2px rgba(201,204,209,0.35)`,
+            }}
+          >
+            CAFÉ
           </div>
-          <div style={{ fontSize: 8, letterSpacing: "0.35em", textTransform: "uppercase", color: COLORS.textLight, marginTop: 2 }}>
-            ✦ Delhi's Finest ✦
+          <div
+            className="font-logo"
+            style={{
+              fontSize: 22,
+              fontWeight: 500,
+              letterSpacing: "0.42em",
+              color: COLORS.silver,
+              opacity: 0.92,
+            }}
+          >
+            DESIRE
+          </div>
+          <div
+            style={{
+              fontFamily: "var(--font-body), sans-serif",
+              fontSize: 7,
+              letterSpacing: "0.42em",
+              textTransform: "uppercase",
+              color: COLORS.smoke,
+              marginTop: 8,
+              opacity: 0.92,
+            }}
+          >
+            After Dark • Holambi Khurd
           </div>
         </div>
 
         {/* Desktop Nav */}
-        <div className="hide-mobile" style={{ display: "flex", gap: 32, alignItems: "center" }}>
+        <div className="hide-mobile" style={{ display: "flex", gap: 28, alignItems: "center" }}>
           {navLinks.map(link => (
             <button key={link.id} onClick={() => setPage(link.id)} style={{
               background: "none", border: "none", cursor: "pointer",
-              fontFamily: "Jost, sans-serif", fontSize: 11, fontWeight: 500,
-              letterSpacing: "0.2em", textTransform: "uppercase",
-              color: page === link.id ? COLORS.gold : COLORS.beige,
-              opacity: page === link.id ? 1 : 0.7,
-              transition: "all 0.3s ease",
-              paddingBottom: 2,
-              borderBottom: page === link.id ? `1px solid ${COLORS.gold}` : "1px solid transparent",
+              fontFamily: "var(--font-body), sans-serif", fontSize: 10, fontWeight: 500,
+              letterSpacing: "0.28em", textTransform: "uppercase",
+              color: page === link.id ? COLORS.ivory : COLORS.smoke,
+              opacity: page === link.id ? 1 : 0.78,
+              transition: "color 0.55s ease, opacity 0.45s ease, box-shadow 0.45s ease, transform 0.45s ease",
+              padding: "10px 0",
+              borderBottom: page === link.id ? `1px solid transparent` : "1px solid transparent",
+              boxShadow:
+                page === link.id ? `inset 0 -1px 0 ${COLORS.neon}, 0 0 24px rgba(179,18,36,0.28)` : "none",
+              textShadow: page === link.id ? "0 0 28px rgba(201,204,209,0.35)" : "none",
             }}
-            onMouseEnter={e => { e.target.style.color = COLORS.gold; e.target.style.opacity = 1; }}
-            onMouseLeave={e => { if (page !== link.id) { e.target.style.color = COLORS.beige; e.target.style.opacity = 0.7; } }}
+            onMouseEnter={e => { e.target.style.color = COLORS.ivory; e.target.style.opacity = 1; e.target.style.boxShadow = "inset 0 -1px 0 rgba(179,18,36,0.85), 0 0 20px rgba(179,18,36,0.18)"; e.target.style.transform = "translateY(-1px)"; }}
+            onMouseLeave={e => {
+              const isActive = page === link.id;
+              if (!isActive) {
+                e.target.style.color = COLORS.smoke;
+                e.target.style.opacity = 0.78;
+                e.target.style.boxShadow = "none";
+              } else {
+                e.target.style.boxShadow = `inset 0 -1px 0 ${COLORS.neon}, 0 0 24px rgba(179,18,36,0.28)`;
+              }
+              e.target.style.transform = "translateY(0)";
+            }}
             >{link.label}</button>
           ))}
-          <button className="btn-gold" onClick={() => setPage("book")} style={{ borderRadius: 0, padding: "10px 20px" }}>
+          <button className="btn-gold cursor-magnetic" onClick={() => setPage("book")} style={{ borderRadius: 0, padding: "10px 22px", letterSpacing: "0.2em", fontSize: 10 }}>
             Book Table
           </button>
         </div>
 
         {/* Mobile Hamburger */}
-        <button className="hide-desktop" onClick={() => setMenuOpen(!menuOpen)} style={{
+        <button className="hide-desktop cursor-magnetic" onClick={() => setMenuOpen(!menuOpen)} style={{
           background: "none", border: "none", cursor: "pointer", padding: 8,
         }}>
-          <div style={{ width: 24, height: 2, background: COLORS.gold, margin: "5px 0", transition: "0.3s", transform: menuOpen ? "rotate(45deg) translate(5px,5px)" : "none" }} />
-          <div style={{ width: 24, height: 2, background: COLORS.gold, margin: "5px 0", opacity: menuOpen ? 0 : 1, transition: "0.3s" }} />
-          <div style={{ width: 24, height: 2, background: COLORS.gold, margin: "5px 0", transition: "0.3s", transform: menuOpen ? "rotate(-45deg) translate(5px,-5px)" : "none" }} />
+          <div style={{ width: 24, height: 2, background: COLORS.silver, margin: "5px 0", transition: "0.35s cubic-bezier(0.22,1,0.36,1)", transform: menuOpen ? "rotate(45deg) translate(5px,5px)" : "none" }} />
+          <div style={{ width: 24, height: 2, background: COLORS.silver, margin: "5px 0", opacity: menuOpen ? 0 : 1, transition: "0.35s" }} />
+          <div style={{ width: 24, height: 2, background: COLORS.silver, margin: "5px 0", transition: "0.35s cubic-bezier(0.22,1,0.36,1)", transform: menuOpen ? "rotate(-45deg) translate(5px,-5px)" : "none" }} />
         </button>
       </nav>
 
@@ -290,25 +678,31 @@ const Navbar = ({ page, setPage }) => {
       {menuOpen && (
         <div style={{
           position: "fixed", top: 0, right: 0, bottom: 0, width: "80%", maxWidth: 320,
-          background: COLORS.brown, zIndex: 1001, padding: "80px 40px 40px",
-          animation: "slideInMenu 0.3s ease",
+          background: "rgba(5,5,5,0.88)", zIndex: 1001, padding: "84px 32px 40px",
+          animation: "slideInMenu 0.65s cubic-bezier(0.22,1,0.36,1)",
+          backdropFilter: "blur(28px)",
+          WebkitBackdropFilter: "blur(28px)",
+          borderLeft: "1px solid rgba(179,18,36,0.22)",
           display: "flex", flexDirection: "column", gap: 4,
         }}>
-          <button onClick={() => setMenuOpen(false)} style={{ position: "absolute", top: 24, right: 24, background: "none", border: "none", color: COLORS.gold, fontSize: 24, cursor: "pointer" }}>✕</button>
-          <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: 22, color: COLORS.gold, marginBottom: 24 }}>Café Desire</div>
+          <button onClick={() => setMenuOpen(false)} style={{ position: "absolute", top: 24, right: 24, background: "none", border: "none", color: COLORS.silver, fontSize: 22, cursor: "pointer" }}>✕</button>
+          <div className="font-logo" style={{ fontSize: 14, letterSpacing: "0.52em", color: COLORS.ivory, marginBottom: 28 }}>
+            DESIRE
+          </div>
           {[...navLinks, { id: "book", label: "Book Table" }].map(link => (
             <button key={link.id} onClick={() => { setPage(link.id); setMenuOpen(false); }} style={{
               background: "none", border: "none", cursor: "pointer",
-              fontFamily: "Jost, sans-serif", fontSize: 13, fontWeight: 500,
-              letterSpacing: "0.15em", textTransform: "uppercase",
-              color: page === link.id ? COLORS.gold : COLORS.beige,
-              textAlign: "left", padding: "12px 0",
-              borderBottom: `1px solid rgba(201,168,76,0.1)`,
-              transition: "color 0.3s",
+              fontFamily: "var(--font-body), sans-serif", fontSize: 12, fontWeight: 500,
+              letterSpacing: "0.22em", textTransform: "uppercase",
+              color: page === link.id ? COLORS.ivory : COLORS.ivory,
+              opacity: page === link.id ? 1 : 0.55,
+              textAlign: "left", padding: "14px 0",
+              borderBottom: `1px solid rgba(179,18,36,0.12)`,
+              transition: "color 0.45s ease, opacity 0.45s ease",
             }}>{link.label}</button>
           ))}
           <div style={{ marginTop: "auto", display: "flex", gap: 16 }}>
-            <a href={`tel:${PHONE1}`} style={{ flex: 1, padding: "14px 0", background: COLORS.gold, color: COLORS.black, textAlign: "center", fontFamily: "Jost", fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", textDecoration: "none", textTransform: "uppercase" }}>📞 Call</a>
+            <a href={`tel:${PHONE1}`} style={{ flex: 1, padding: "14px 0", background: `linear-gradient(135deg, ${COLORS.blood}, ${COLORS.neon})`, color: COLORS.ivory, textAlign: "center", fontFamily: "var(--font-body), sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.18em", textDecoration: "none", textTransform: "uppercase", boxShadow: "0 0 24px rgba(179,18,36,0.25)" }}>📞 Call</a>
             <a href={`https://wa.me/91${PHONE1}?text=${WA_MSG}`} target="_blank" rel="noreferrer" style={{ flex: 1, padding: "14px 0", background: "#25D366", color: "#fff", textAlign: "center", fontFamily: "Jost", fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", textDecoration: "none", textTransform: "uppercase" }}>💬 WhatsApp</a>
           </div>
         </div>
@@ -323,22 +717,55 @@ const Navbar = ({ page, setPage }) => {
 // ============================================================
 const FloatingButtons = () => (
   <div style={{ position: "fixed", bottom: 80, right: 20, zIndex: 999, display: "flex", flexDirection: "column", gap: 12 }}>
-    <a href={`https://wa.me/91${PHONE1}?text=${WA_MSG}`} target="_blank" rel="noreferrer"
+    <a
+      href={`https://wa.me/91${PHONE1}?text=${WA_MSG}`}
+      target="_blank"
+      rel="noreferrer"
       title="Order on WhatsApp"
+      className="cursor-magnetic"
       style={{
-        width: 54, height: 54, borderRadius: "50%", background: "#25D366",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        boxShadow: "0 4px 20px rgba(37,211,102,0.4)",
-        animation: "pulse 2s infinite", textDecoration: "none", fontSize: 24,
-      }}>💬</a>
-    <a href={`tel:${PHONE1}`}
+        width: 54,
+        height: 54,
+        borderRadius: "50%",
+        background: COLORS.glass,
+        backdropFilter: "blur(16px)",
+        border: `1px solid rgba(179,18,36,0.38)`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow:
+          "0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(236,231,223,0.08), 0 0 28px rgba(179,18,36,0.18)",
+        animation: "pulse 3.2s ease-in-out infinite",
+        textDecoration: "none",
+        fontSize: 22,
+        transition: "transform 0.5s cubic-bezier(0.22,1,0.36,1)",
+      }}
+    >
+      💬
+    </a>
+    <a
+      href={`tel:${PHONE1}`}
       title="Call Now"
+      className="cursor-magnetic"
       style={{
-        width: 54, height: 54, borderRadius: "50%", background: COLORS.gold,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        boxShadow: "0 4px 20px rgba(201,168,76,0.4)",
-        textDecoration: "none", fontSize: 24, animation: "float 3s ease-in-out infinite",
-      }}>📞</a>
+        width: 54,
+        height: 54,
+        borderRadius: "50%",
+        background: `linear-gradient(145deg, ${COLORS.obsidian}, ${COLORS.blood})`,
+        border: `1px solid rgba(201,204,209,0.22)`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow:
+          "0 8px 32px rgba(0,0,0,0.55), inset 0 1px 0 rgba(236,231,223,0.06), 0 0 32px rgba(179,18,36,0.22)",
+        textDecoration: "none",
+        fontSize: 22,
+        animation: "float 5s ease-in-out infinite",
+        transition: "transform 0.5s cubic-bezier(0.22,1,0.36,1)",
+      }}
+    >
+      📞
+    </a>
   </div>
 );
 
@@ -348,8 +775,11 @@ const FloatingButtons = () => (
 const MobileBottomBar = ({ setPage }) => (
   <div className="hide-desktop" style={{
     position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 998,
-    display: "flex", background: COLORS.brown,
-    borderTop: `1px solid rgba(201,168,76,0.3)`,
+    display: "flex", background: "rgba(5,5,5,0.86)",
+    backdropFilter: "blur(22px) saturate(1.06)",
+    WebkitBackdropFilter: "blur(22px) saturate(1.06)",
+    borderTop: `1px solid rgba(179,18,36,0.28)`,
+    boxShadow: "0 -12px 40px rgba(0,0,0,0.45)",
   }}>
     {[
       { icon: "🏠", label: "Home", action: () => setPage("home") },
@@ -364,7 +794,7 @@ const MobileBottomBar = ({ setPage }) => (
         color: COLORS.beige, transition: "color 0.3s",
       }}>
         <span style={{ fontSize: 18 }}>{item.icon}</span>
-        <span style={{ fontFamily: "Jost", fontSize: 9, letterSpacing: "0.1em", textTransform: "uppercase" }}>{item.label}</span>
+        <span style={{ fontFamily: "var(--font-body), sans-serif", fontSize: 9, letterSpacing: "0.12em", textTransform: "uppercase", color: COLORS.ivory }}>{item.label}</span>
       </button>
     ))}
   </div>
@@ -375,10 +805,26 @@ const MobileBottomBar = ({ setPage }) => (
 // ============================================================
 const HomePage = ({ setPage }) => {
   useScrollReveal();
+  const [ambient, setAmbient] = useState({ mx: 0, my: 0, sy: 0 });
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [faqOpen, setFaqOpen] = useState(null);
   const [activeDishCategory, setActiveDishCategory] = useState(0);
   const [offerPopup, setOfferPopup] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setAmbient((a) => ({ ...a, sy: Math.min(window.scrollY, 900) }));
+    const onMove = (e) => {
+      const mx = (e.clientX / window.innerWidth - 0.5) * 2;
+      const my = (e.clientY / window.innerHeight - 0.5) * 2;
+      setAmbient((a) => ({ ...a, mx, my }));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("mousemove", onMove);
+    };
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setOfferPopup(true), 4000);
@@ -436,81 +882,287 @@ const HomePage = ({ setPage }) => {
 
   return (
     <div>
-      {/* ── HERO ── */}
-      <section style={{ position: "relative", height: "100vh", minHeight: 600, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        {/* BG */}
-        <div style={{
-          position: "absolute", inset: 0,
-          background: `linear-gradient(135deg, #1a0a00 0%, #3b1500 40%, #0d0500 100%)`,
-          animation: "heroZoom 20s ease-in-out infinite alternate",
-        }} />
-        {/* Overlay pattern */}
-        <div style={{ position: "absolute", inset: 0, backgroundImage: `radial-gradient(circle at 20% 50%, rgba(201,168,76,0.08) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(201,168,76,0.06) 0%, transparent 50%)` }} />
-        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)" }} />
-
-        {/* Food emoji decorations */}
-        {["🍕","🍔","🥟","🍜","🍗","🥤","☕","🌮"].map((e,i) => (
-          <div key={i} style={{
+      {/* ── HERO — Fallen Angel Noir ── */}
+      <section style={{ position: "relative", height: "100vh", minHeight: 620, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div
+          className="hero-gradient-drift"
+          style={{
             position: "absolute",
-            top: `${15 + (i * 11) % 70}%`,
-            left: `${5 + (i * 13) % 90}%`,
-            fontSize: `${20 + (i%3)*8}px`,
-            opacity: 0.06,
-            animation: `float ${3 + i*0.5}s ease-in-out infinite`,
-            animationDelay: `${i*0.4}s`,
-          }}>{e}</div>
+            inset: "-22%",
+            background: `
+              radial-gradient(circle at 26% 18%, rgba(122,12,22,0.58), transparent 52%),
+              radial-gradient(circle at 82% 6%, rgba(179,18,36,0.16), transparent 48%),
+              radial-gradient(circle at 52% 110%, rgba(5,5,8,1), transparent 58%),
+              linear-gradient(168deg, #050505 0%, #0E0E12 48%, #050505 100%)
+            `,
+            transform: `translate(${ambient.mx * -12}px, ${ambient.my * -8}px) translateY(${ambient.sy * 0.04}px)`,
+            transition: "transform 0.2s cubic-bezier(0.22,1,0.36,1)",
+          }}
+        />
+
+        {/* Cinematic vignette */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "radial-gradient(circle at 50% 40%, transparent 38%, rgba(5,5,5,0.72) 100%), linear-gradient(180deg, rgba(5,5,5,0.25) 0%, rgba(5,5,5,0.92) 100%)",
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Grid + depth */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            opacity: 0.14,
+            backgroundImage: `
+              linear-gradient(rgba(201,204,209,0.07) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(201,204,209,0.05) 1px, transparent 1px)
+            `,
+            backgroundSize: "72px 72px",
+            transform: `perspective(1400px) rotateX(56deg) scale(2.6) translateY(${18 + ambient.my * -4}px)`,
+            transformOrigin: "50% 0%",
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Layered aurora */}
+        <div
+          style={{
+            position: "absolute",
+            inset: "-30% -20%",
+            background:
+              "conic-gradient(from 220deg at 50% 50%, rgba(179,18,36,0.16), transparent 28%, rgba(201,204,209,0.06), transparent 72%, rgba(122,12,22,0.12))",
+            opacity: 0.45,
+            animation: "heroGlow 38s ease-in-out infinite alternate",
+            mixBlendMode: "screen",
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Smoke blobs */}
+        {Array.from({ length: 16 }).map((_, i) => (
+          <div
+            key={i}
+            style={{
+              position: "absolute",
+              bottom: `${-14 + ((i * 13) % 55)}%`,
+              left: `${2 + ((i * 11) % 96)}%`,
+              width: `${120 + ((i % 4) * 55)}px`,
+              height: `${120 + ((i % 3) * 70)}px`,
+              borderRadius: "50%",
+              background: `radial-gradient(circle at 38% 38%, rgba(122,12,22,${0.12 + ((i % 5) * 0.024)}), rgba(179,18,36,${0.08 + ((i % 4) * 0.015)}), transparent 68%)`,
+              filter: `blur(${16 + ((i % 4) * 6)}px)`,
+              animation: `smoke ${14 + ((i % 6) * 1.8)}s ease-out infinite`,
+              animationDelay: `${i * 0.55}s`,
+              pointerEvents: "none",
+            }}
+          />
         ))}
 
-        <div style={{ position: "relative", zIndex: 2, textAlign: "center", padding: "0 20px", maxWidth: 900 }}>
-          <div className="section-label" style={{ justifyContent: "center", marginBottom: 20, animation: "fadeIn 1s ease 0.3s both" }}>
-            Est. Since 2020 · Holambi Khurd, Delhi
+        {/* Slow particles */}
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage:
+              "radial-gradient(1px 1px at 12% 24%, rgba(236,231,223,0.22), transparent), radial-gradient(1px 1px at 73% 38%, rgba(201,204,209,0.18), transparent), radial-gradient(1.5px 1.5px at 44% 78%, rgba(179,18,36,0.35), transparent), radial-gradient(1px 1px at 88% 18%, rgba(236,231,223,0.12), transparent)",
+            opacity: 0.35,
+            animation: "smoke 60s linear infinite",
+            pointerEvents: "none",
+            mixBlendMode: "screen",
+          }}
+        />
+
+        {/* Wings behind title */}
+        <FallenAngelWings shiftX={ambient.mx * 38 + ambient.sy * 0.03} shiftY={ambient.my * 26 + ambient.sy * 0.05} />
+
+        {/* Hero copy */}
+        <div
+          style={{
+            position: "relative",
+            zIndex: 3,
+            textAlign: "center",
+            padding: "0 clamp(16px, 4vw, 40px)",
+            maxWidth: 1040,
+            transform: `translate(${ambient.mx * -10}px, ${ambient.my * -6}px) translateY(${ambient.sy * 0.05}px)`,
+            transition: "transform 0.18s cubic-bezier(0.22,1,0.36,1)",
+          }}
+        >
+          <div
+            className="section-label"
+            style={{ justifyContent: "center", marginBottom: 26, animation: "fadeIn 1.2s cubic-bezier(0.22,1,0.36,1) 0.15s both" }}
+          >
+            Private Lounge Aura · Est. After Dark · Holambi Khurd
           </div>
-          <h1 style={{
-            fontFamily: "Cormorant Garamond, serif", fontWeight: 300, fontSize: "clamp(48px, 9vw, 96px)",
-            lineHeight: 1.05, color: COLORS.white, marginBottom: 16,
-            animation: "fadeUp 1s ease 0.5s both",
-          }}>
-            North Delhi's<br/>
-            <span style={{ color: COLORS.gold, fontStyle: "italic" }}>Favorite</span> Family Cafe
+
+          <h1
+            className="font-logo"
+            style={{
+              fontWeight: 400,
+              fontSize: "clamp(40px, 11vw, 138px)",
+              lineHeight: 0.94,
+              letterSpacing: "0.22em",
+              color: COLORS.ivory,
+              marginBottom: 28,
+              textTransform: "uppercase",
+              textShadow:
+                `0 0 80px rgba(122,12,22,0.45), 0 0 2px rgba(236,231,223,0.35), 0 24px 90px rgba(0,0,0,0.85)`,
+              animation: "fadeUp 1.35s cubic-bezier(0.22,1,0.36,1) 0.35s both",
+            }}
+          >
+            CAFÉ
+            <br />
+            DESIRE
           </h1>
-          <p style={{
-            fontFamily: "Jost", fontSize: "clamp(15px, 2vw, 18px)", fontWeight: 300,
-            color: "rgba(245,237,216,0.8)", letterSpacing: "0.05em", marginBottom: 48,
-            animation: "fadeUp 1s ease 0.8s both",
-          }}>
-            Fresh food, warm vibes & unforgettable moments — since 2020
+
+          <p
+            className="font-display"
+            style={{
+              fontWeight: 300,
+              fontSize: "clamp(19px, 2.65vw, 28px)",
+              fontStyle: "italic",
+              color: "rgba(236,231,223,0.88)",
+              letterSpacing: "0.14em",
+              marginBottom: 44,
+              animation: "fadeUp 1.35s cubic-bezier(0.22,1,0.36,1) 0.62s both",
+            }}
+          >
+            Where Temptation Meets Elegance
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", animation: "fadeUp 1s ease 1s both" }}>
-            <button className="btn-gold" onClick={() => setPage("menu")} style={{ borderRadius: 0 }}>🍕 View Menu</button>
+
+          <p
+            style={{
+              fontFamily: "var(--font-body), sans-serif",
+              fontSize: "clamp(13px, 1.45vw, 15px)",
+              fontWeight: 300,
+              letterSpacing: "0.06em",
+              color: COLORS.smoke,
+              marginBottom: 48,
+              maxWidth: 520,
+              marginLeft: "auto",
+              marginRight: "auto",
+              lineHeight: 1.8,
+              animation: "fadeUp 1.35s cubic-bezier(0.22,1,0.36,1) 0.78s both",
+            }}
+          >
+            Velvet darkness, celestial hush, and the slow burn of crimson hospitality — dine like the night belongs to you.
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 14,
+              justifyContent: "center",
+              animation: "fadeUp 1.35s cubic-bezier(0.22,1,0.36,1) 0.95s both",
+            }}
+          >
+            <button className="btn-gold cursor-magnetic" type="button" onClick={() => setPage("menu")} style={{ borderRadius: 0 }}>
+              View Signature Menu
+            </button>
             <a href={`https://wa.me/91${PHONE1}?text=${WA_MSG}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
-              <button style={{ background: "#25D366", color: "#fff", border: "none", fontFamily: "Jost", fontWeight: 600, fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", padding: "14px 28px", cursor: "pointer", transition: "all 0.3s" }}>💬 Order on WhatsApp</button>
+              <button type="button" className="btn-outline cursor-magnetic" style={{ borderRadius: 0 }}>
+                Order on WhatsApp
+              </button>
             </a>
             <a href={`tel:${PHONE1}`} style={{ textDecoration: "none" }}>
-              <button className="btn-outline" style={{ borderRadius: 0 }}>📞 Call Now</button>
+              <button type="button" className="btn-outline cursor-magnetic" style={{ borderRadius: 0 }}>
+                Call Concierge
+              </button>
             </a>
-            <button className="btn-outline" onClick={() => setPage("book")} style={{ borderRadius: 0, background: "rgba(201,168,76,0.1)" }}>📅 Book Table</button>
+            <button type="button" className="btn-outline cursor-magnetic" onClick={() => setPage("book")} style={{ borderRadius: 0, background: COLORS.glass }}>
+              Reserve Private Table
+            </button>
           </div>
-          {/* Stats */}
-          <div style={{ display: "flex", gap: 40, justifyContent: "center", marginTop: 60, animation: "fadeUp 1s ease 1.3s both" }}>
-            {[["500+","Happy Families/Day"], ["4.8★","Google Rating"], ["50+","Menu Items"], ["3+","Years of Love"]].map(([n,l]) => (
-              <div key={l} style={{ textAlign: "center" }}>
-                <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: 28, color: COLORS.gold, fontWeight: 600 }}>{n}</div>
-                <div style={{ fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(245,237,216,0.6)", marginTop: 2 }}>{l}</div>
-              </div>
-            ))}
+
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "clamp(20px, 5vw, 48px)",
+              justifyContent: "center",
+              marginTop: "clamp(44px, 8vh, 72px)",
+              animation: "fadeUp 1.35s cubic-bezier(0.22,1,0.36,1) 1.18s both",
+            }}
+          >
+            {[["500+", "Evening Guests"], ["4.8★", "Google Rating"], ["50+", "Curated Dishes"], ["3+", "Years of Desire"]].map(
+              ([n, l]) => (
+                <div key={l} style={{ textAlign: "center", minWidth: 100 }}>
+                  <div style={{ fontFamily: "var(--font-heading), serif", fontSize: 27, color: COLORS.silver, fontWeight: 500, letterSpacing: "0.04em" }}>{n}</div>
+                  <div
+                    style={{
+                      fontFamily: "var(--font-body), sans-serif",
+                      fontSize: 9,
+                      letterSpacing: "0.28em",
+                      textTransform: "uppercase",
+                      color: COLORS.smoke,
+                      marginTop: 6,
+                    }}
+                  >
+                    {l}
+                  </div>
+                </div>
+              )
+            )}
           </div>
         </div>
+
         {/* Scroll indicator */}
-        <div style={{ position: "absolute", bottom: 30, left: "50%", transform: "translateX(-50%)", animation: "float 2s ease-in-out infinite" }}>
-          <div style={{ width: 1, height: 50, background: `linear-gradient(to bottom, ${COLORS.gold}, transparent)`, margin: "0 auto" }} />
+        <div
+          style={{
+            position: "absolute",
+            bottom: 28,
+            left: "50%",
+            transform: "translateX(-50%)",
+            animation: "float 3.2s ease-in-out infinite",
+            zIndex: 4,
+          }}
+        >
+          <div
+            style={{
+              width: 1,
+              height: 56,
+              background: `linear-gradient(to bottom, ${COLORS.neon}, rgba(201,204,209,0.35), transparent)`,
+              margin: "0 auto",
+              opacity: 0.75,
+            }}
+          />
         </div>
       </section>
 
       {/* ── OFFER BANNER ── */}
-      <section style={{ background: `linear-gradient(90deg, ${COLORS.brownMid}, ${COLORS.brown}, ${COLORS.brownMid})`, padding: "14px 20px", textAlign: "center", borderTop: `1px solid rgba(201,168,76,0.2)`, borderBottom: `1px solid rgba(201,168,76,0.2)` }}>
-        <p style={{ fontFamily: "Jost", fontSize: 13, letterSpacing: "0.1em", color: COLORS.beige }}>
-          🎉 <span style={{ color: COLORS.gold, fontWeight: 600 }}>SPECIAL OFFER</span> — Family Combo Meal @ ₹499 · Wednesday 20% Off · Birthday Package Available &nbsp;
-          <button onClick={() => setPage("offers")} style={{ background: "none", border: "none", color: COLORS.gold, cursor: "pointer", fontFamily: "Jost", fontSize: 12, textDecoration: "underline" }}>View All Offers →</button>
+      <section
+        style={{
+          background: `linear-gradient(90deg, rgba(14,14,16,0.98), rgba(122,12,22,0.22), rgba(14,14,16,0.98))`,
+          padding: "14px 20px",
+          textAlign: "center",
+          borderTop: `1px solid rgba(179,18,36,0.28)`,
+          borderBottom: `1px solid rgba(201,204,209,0.12)`,
+        }}
+      >
+        <p style={{ fontFamily: "var(--font-body), sans-serif", fontSize: 12, letterSpacing: "0.14em", color: COLORS.ivory }}>
+          <span style={{ color: COLORS.neon, fontWeight: 600 }}>AFTER-DARK OFFER</span> — Family Combo @ ₹499 · Wednesday 20% · Birthday Suite &nbsp;
+          <button
+            type="button"
+            onClick={() => setPage("offers")}
+            style={{
+              background: "none",
+              border: "none",
+              color: COLORS.silver,
+              cursor: "pointer",
+              fontFamily: "var(--font-body), sans-serif",
+              fontSize: 11,
+              letterSpacing: "0.12em",
+              textDecoration: "underline",
+              textUnderlineOffset: 4,
+            }}
+          >
+            View All Offers →
+          </button>
         </p>
       </section>
 
@@ -527,8 +1179,14 @@ const HomePage = ({ setPage }) => {
             {categories.map((cat, i) => (
               <div key={cat.name} className="reveal card-hover" onClick={() => setPage("menu")}
                 style={{
-                  background: `linear-gradient(135deg, ${COLORS.brown} 0%, rgba(59,35,20,0.6) 100%)`,
-                  border: `1px solid rgba(201,168,76,0.15)`, padding: "24px 16px",
+                  background: `
+                    linear-gradient(152deg,
+                      rgba(255,255,255,0.04) 0%,
+                      rgba(122,12,22,0.14) 45%,
+                      rgba(14,14,18,0.92) 100%)`,
+                  border: `1px solid rgba(201,204,209,0.12)`,
+                  boxShadow: "inset 0 1px 0 rgba(236,231,223,0.04)",
+                  padding: "26px 16px",
                   textAlign: "center", cursor: "pointer",
                   transitionDelay: `${i * 0.05}s`,
                 }}>
@@ -557,7 +1215,7 @@ const HomePage = ({ setPage }) => {
                   background: COLORS.brown, border: `1px solid rgba(201,168,76,0.15)`,
                   overflow: "hidden", transitionDelay: `${i * 0.1}s`,
                 }}>
-                <div style={{ height: 200, background: `linear-gradient(135deg, #2a1200, #1a0800)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 80, position: "relative", overflow: "hidden" }}>
+                <div style={{ height: 200, background: `linear-gradient(145deg, rgba(122,12,22,0.35), #0a0a0c, #121218)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 80, position: "relative", overflow: "hidden" }}>
                   <span style={{ transition: "transform 0.5s", display: "block" }} onMouseEnter={e => e.target.style.transform = "scale(1.2)"} onMouseLeave={e => e.target.style.transform = "scale(1)"}>{dish.emoji}</span>
                   <span style={{ position: "absolute", top: 12, left: 12, background: COLORS.gold, color: COLORS.black, fontSize: 9, fontWeight: 700, letterSpacing: "0.1em", padding: "4px 8px", textTransform: "uppercase" }}>{dish.tag}</span>
                 </div>
@@ -1068,9 +1726,17 @@ const ContactPage = () => {
   ];
 
   const inputStyle = {
-    width: "100%", background: COLORS.black, border: `1px solid rgba(201,168,76,0.2)`,
-    color: COLORS.beige, fontFamily: "Jost", fontSize: 14, padding: "14px 16px",
-    outline: "none", transition: "border-color 0.3s", marginBottom: 16,
+    width: "100%",
+    background: "rgba(5,5,5,0.65)",
+    border: `1px solid rgba(201,204,209,0.14)`,
+    color: COLORS.ivory,
+    fontFamily: "var(--font-body), sans-serif",
+    fontSize: 14,
+    padding: "15px 16px",
+    outline: "none",
+    transition: "border-color 0.55s ease, box-shadow 0.55s ease",
+    marginBottom: 16,
+    backdropFilter: "blur(12px)",
   };
 
   return (
@@ -1142,9 +1808,9 @@ const ContactPage = () => {
                 </div>
               ) : (
                 <div>
-                  <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Your Name *" style={inputStyle} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={e => e.target.style.borderColor = "rgba(201,168,76,0.2)"} />
-                  <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="Your Phone Number *" style={inputStyle} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={e => e.target.style.borderColor = "rgba(201,168,76,0.2)"} />
-                  <textarea value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} placeholder="Your Message" rows={5} style={{ ...inputStyle, resize: "vertical" }} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={e => e.target.style.borderColor = "rgba(201,168,76,0.2)"} />
+                  <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Your Name *" style={inputStyle} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={(e) => (e.target.style.borderColor = "rgba(201,204,209,0.14)")} />
+                  <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="Your Phone Number *" style={inputStyle} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={(e) => (e.target.style.borderColor = "rgba(201,204,209,0.14)")} />
+                  <textarea value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} placeholder="Your Message" rows={5} style={{ ...inputStyle, resize: "vertical" }} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={(e) => (e.target.style.borderColor = "rgba(201,204,209,0.14)")} />
                   <button className="btn-gold" onClick={handleSubmit} style={{ width: "100%" }}>Send via WhatsApp →</button>
                 </div>
               )}
@@ -1182,9 +1848,16 @@ const BookTablePage = () => {
   };
 
   const inputStyle = {
-    width: "100%", background: COLORS.black, border: `1px solid rgba(201,168,76,0.2)`,
-    color: COLORS.beige, fontFamily: "Jost", fontSize: 14, padding: "14px 16px",
-    outline: "none", transition: "border-color 0.3s",
+    width: "100%",
+    background: "rgba(5,5,5,0.65)",
+    border: `1px solid rgba(201,204,209,0.14)`,
+    color: COLORS.ivory,
+    fontFamily: "var(--font-body), sans-serif",
+    fontSize: 14,
+    padding: "15px 16px",
+    outline: "none",
+    transition: "border-color 0.55s ease, box-shadow 0.55s ease",
+    backdropFilter: "blur(12px)",
   };
 
   const occasions = ["General Dining", "Birthday Celebration", "Anniversary", "Date Night", "Family Gathering", "Business Meeting", "Engagement", "Other"];
@@ -1211,34 +1884,49 @@ const BookTablePage = () => {
   return (
     <div style={{ paddingTop: 80 }}>
       <section style={{ padding: "80px 20px", background: COLORS.brown, textAlign: "center" }}>
-        <div className="section-label" style={{ justifyContent: "center", marginBottom: 16 }}>Reserve Your Spot</div>
+        <div className="section-label" style={{ justifyContent: "center", marginBottom: 16 }}>Private Reservations</div>
         <h1 className="font-display" style={{ fontSize: "clamp(40px, 6vw, 72px)", fontWeight: 300, color: COLORS.white }}>
-          Book a <span style={{ color: COLORS.gold, fontStyle: "italic" }}>Table</span>
+          Enter the <span style={{ color: COLORS.ivory, fontStyle: "italic" }}>Lounge</span>
         </h1>
-        <p style={{ color: COLORS.textLight, marginTop: 12 }}>Open daily 11:00 AM – 11:00 PM</p>
+        <p style={{ color: COLORS.smoke, marginTop: 14, fontFamily: "var(--font-body), sans-serif", letterSpacing: "0.08em", fontSize: 13 }}>
+          Open nightly · 11:00 AM – 11:00 PM · Concierge confirms on WhatsApp
+        </p>
       </section>
 
       <section style={{ padding: "60px 20px 80px", background: COLORS.black }}>
         <div style={{ maxWidth: 700, margin: "0 auto" }}>
-          <div style={{ background: COLORS.brown, border: `1px solid rgba(201,168,76,0.2)`, padding: "48px" }}>
+          <div
+            style={{
+              background: `
+                linear-gradient(168deg,
+                  rgba(255,255,255,0.05) 0%,
+                  rgba(122,12,22,0.08) 42%,
+                  rgba(14,14,18,0.94) 100%)`,
+              border: `1px solid rgba(201,204,209,0.14)`,
+              padding: "clamp(32px, 6vw, 52px)",
+              backdropFilter: "blur(24px)",
+              boxShadow:
+                "0 40px 100px rgba(0,0,0,0.55), inset 0 1px 0 rgba(236,231,223,0.06), 0 0 80px rgba(122,12,22,0.12)",
+            }}
+          >
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
               <div>
-                <label style={{ display: "block", fontFamily: "Jost", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: COLORS.gold, marginBottom: 8 }}>Full Name *</label>
-                <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Your Name" style={inputStyle} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={e => e.target.style.borderColor = "rgba(201,168,76,0.2)"} />
+                <label style={{ display: "block", fontFamily: "var(--font-body), sans-serif", fontSize: 10, letterSpacing: "0.26em", textTransform: "uppercase", color: COLORS.silver, marginBottom: 8 }}>Full Name *</label>
+                <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Your Name" style={inputStyle} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={(e) => (e.target.style.borderColor = "rgba(201,204,209,0.14)")} />
               </div>
               <div>
-                <label style={{ display: "block", fontFamily: "Jost", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: COLORS.gold, marginBottom: 8 }}>Phone Number *</label>
-                <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="Your Phone" style={inputStyle} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={e => e.target.style.borderColor = "rgba(201,168,76,0.2)"} />
+                <label style={{ display: "block", fontFamily: "var(--font-body), sans-serif", fontSize: 10, letterSpacing: "0.26em", textTransform: "uppercase", color: COLORS.silver, marginBottom: 8 }}>Phone Number *</label>
+                <input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder="Your Phone" style={inputStyle} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={(e) => (e.target.style.borderColor = "rgba(201,204,209,0.14)")} />
               </div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
               <div>
-                <label style={{ display: "block", fontFamily: "Jost", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: COLORS.gold, marginBottom: 8 }}>Date *</label>
-                <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} style={{ ...inputStyle, colorScheme: "dark" }} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={e => e.target.style.borderColor = "rgba(201,168,76,0.2)"} />
+                <label style={{ display: "block", fontFamily: "var(--font-body), sans-serif", fontSize: 10, letterSpacing: "0.26em", textTransform: "uppercase", color: COLORS.silver, marginBottom: 8 }}>Date *</label>
+                <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} style={{ ...inputStyle, colorScheme: "dark" }} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={(e) => (e.target.style.borderColor = "rgba(201,204,209,0.14)")} />
               </div>
               <div>
-                <label style={{ display: "block", fontFamily: "Jost", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: COLORS.gold, marginBottom: 8 }}>Time *</label>
-                <select value={form.time} onChange={e => setForm({ ...form, time: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={e => e.target.style.borderColor = "rgba(201,168,76,0.2)"}>
+                <label style={{ display: "block", fontFamily: "var(--font-body), sans-serif", fontSize: 10, letterSpacing: "0.26em", textTransform: "uppercase", color: COLORS.silver, marginBottom: 8 }}>Time *</label>
+                <select value={form.time} onChange={e => setForm({ ...form, time: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={(e) => (e.target.style.borderColor = "rgba(201,204,209,0.14)")}>
                   <option value="">Select Time</option>
                   {times.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
@@ -1246,21 +1934,21 @@ const BookTablePage = () => {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
               <div>
-                <label style={{ display: "block", fontFamily: "Jost", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: COLORS.gold, marginBottom: 8 }}>Guests</label>
-                <select value={form.guests} onChange={e => setForm({ ...form, guests: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={e => e.target.style.borderColor = "rgba(201,168,76,0.2)"}>
+                <label style={{ display: "block", fontFamily: "var(--font-body), sans-serif", fontSize: 10, letterSpacing: "0.26em", textTransform: "uppercase", color: COLORS.silver, marginBottom: 8 }}>Guests</label>
+                <select value={form.guests} onChange={e => setForm({ ...form, guests: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={(e) => (e.target.style.borderColor = "rgba(201,204,209,0.14)")}>
                   {[1,2,3,4,5,6,7,8,9,10,"10+"].map(n => <option key={n} value={n}>{n} {n === 1 ? "Guest" : "Guests"}</option>)}
                 </select>
               </div>
               <div>
-                <label style={{ display: "block", fontFamily: "Jost", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: COLORS.gold, marginBottom: 8 }}>Occasion</label>
-                <select value={form.occasion} onChange={e => setForm({ ...form, occasion: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={e => e.target.style.borderColor = "rgba(201,168,76,0.2)"}>
+                <label style={{ display: "block", fontFamily: "var(--font-body), sans-serif", fontSize: 10, letterSpacing: "0.26em", textTransform: "uppercase", color: COLORS.silver, marginBottom: 8 }}>Occasion</label>
+                <select value={form.occasion} onChange={e => setForm({ ...form, occasion: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={(e) => (e.target.style.borderColor = "rgba(201,204,209,0.14)")}>
                   {occasions.map(o => <option key={o} value={o}>{o}</option>)}
                 </select>
               </div>
             </div>
             <div style={{ marginBottom: 24 }}>
-              <label style={{ display: "block", fontFamily: "Jost", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: COLORS.gold, marginBottom: 8 }}>Special Requests / Notes</label>
-              <textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder="Any dietary requirements, special decoration requests, etc." rows={4} style={{ ...inputStyle, resize: "vertical" }} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={e => e.target.style.borderColor = "rgba(201,168,76,0.2)"} />
+              <label style={{ display: "block", fontFamily: "var(--font-body), sans-serif", fontSize: 10, letterSpacing: "0.26em", textTransform: "uppercase", color: COLORS.silver, marginBottom: 8 }}>Special Requests / Notes</label>
+              <textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder="Any dietary requirements, special decoration requests, etc." rows={4} style={{ ...inputStyle, resize: "vertical" }} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={(e) => (e.target.style.borderColor = "rgba(201,204,209,0.14)")} />
             </div>
             <button className="btn-gold" onClick={handleSubmit} style={{ width: "100%", padding: "18px", fontSize: 12 }}>
               📅 Confirm Reservation via WhatsApp
@@ -1276,9 +1964,9 @@ const BookTablePage = () => {
               { icon: "📞", t: "Call Us", v: PHONE1 },
               { icon: "📍", t: "Location", v: "Holambi Khurd" },
             ].map(i => (
-              <div key={i.t} style={{ background: COLORS.brown, border: `1px solid rgba(201,168,76,0.1)`, padding: "20px", textAlign: "center" }}>
-                <div style={{ fontSize: 28, marginBottom: 8 }}>{i.icon}</div>
-                <div style={{ fontFamily: "Jost", fontSize: 9, letterSpacing: "0.15em", textTransform: "uppercase", color: COLORS.gold, marginBottom: 4 }}>{i.t}</div>
+              <div key={i.t} style={{ background: COLORS.glass, border: `1px solid rgba(201,204,209,0.12)`, backdropFilter: "blur(14px)", padding: "22px", textAlign: "center" }}>
+                <div style={{ fontSize: 26, marginBottom: 8 }}>{i.icon}</div>
+                <div style={{ fontFamily: "var(--font-body), sans-serif", fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase", color: COLORS.neon, marginBottom: 4 }}>{i.t}</div>
                 <div style={{ fontSize: 13, color: COLORS.beige }}>{i.v}</div>
               </div>
             ))}
@@ -1484,21 +2172,92 @@ const BlogPage = ({ setPage }) => {
 // FOOTER
 // ============================================================
 const Footer = ({ setPage }) => (
-  <footer style={{ background: COLORS.brown, borderTop: `1px solid rgba(201,168,76,0.2)` }}>
-    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "60px 20px 30px" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 40, marginBottom: 40 }}>
+  <footer
+    style={{
+      position: "relative",
+      overflow: "hidden",
+      background:
+        "linear-gradient(180deg, #050508 0%, #0c0d12 40%, #050508 85%, rgba(122,12,22,0.12) 100%)",
+      borderTop: `1px solid rgba(179,18,36,0.22)`,
+    }}
+  >
+    <div style={{ position: "absolute", inset: 0, opacity: 0.25, pointerEvents: "none" }} className="footer-noir-dust" />
+    <div
+      aria-hidden
+      style={{
+        position: "absolute",
+        inset: "auto -20% 0",
+        height: "45%",
+        background:
+          "linear-gradient(180deg, transparent 0%, rgba(201,204,209,0.04) 100%)",
+        maskImage: "linear-gradient(transparent 0%, black 100%)",
+        pointerEvents: "none",
+      }}
+    />
+    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "64px 20px 34px", position: "relative", zIndex: 1 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 40, marginBottom: 44 }}>
         {/* Brand */}
         <div>
-          <div style={{ fontFamily: "Cormorant Garamond, serif", fontSize: 32, fontWeight: 300, color: COLORS.gold, marginBottom: 4 }}>Café Desire</div>
-          <div style={{ fontSize: 9, letterSpacing: "0.35em", textTransform: "uppercase", color: COLORS.textLight, marginBottom: 16 }}>✦ Delhi's Finest ✦</div>
-          <p style={{ fontSize: 13, color: COLORS.textLight, lineHeight: 1.7, marginBottom: 20 }}>
-            North Delhi's favorite family cafe, serving fresh food with warmth and love since 2020.
+          <div
+            className="font-logo"
+            style={{
+              fontSize: 14,
+              fontWeight: 500,
+              color: COLORS.ivory,
+              marginBottom: 8,
+              letterSpacing: "0.52em",
+              lineHeight: 1.2,
+              textShadow: "0 0 40px rgba(179,18,36,0.25)",
+            }}
+          >
+            CAFÉ DESIRE
+          </div>
+          <div style={{ fontSize: 9, letterSpacing: "0.38em", textTransform: "uppercase", color: COLORS.smoke, marginBottom: 18 }}>
+            Fallen Angel Noir Lounge
+          </div>
+          <p style={{ fontSize: 13, color: COLORS.smoke, lineHeight: 1.8, marginBottom: 22, maxWidth: 280 }}>
+            A velvet invitation to crave the night — where silver light, tempered crimson, and Delhi's late hours align.
+          </p>
+          <p
+            style={{
+              fontFamily: "var(--font-heading), serif",
+              fontStyle: "italic",
+              fontSize: 17,
+              color: COLORS.silver,
+              letterSpacing: "0.06em",
+              marginBottom: 22,
+            }}
+          >
+            See You After Dark
           </p>
           <div style={{ display: "flex", gap: 12 }}>
-            {["📘","📸","💬","⭐"].map((icon, i) => (
-              <div key={i} style={{ width: 36, height: 36, borderRadius: "50%", border: `1px solid rgba(201,168,76,0.3)`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.3s", fontSize: 16 }}
-                onMouseEnter={e => { e.currentTarget.style.background = COLORS.gold; e.currentTarget.style.borderColor = COLORS.gold; }}
-                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(201,168,76,0.3)"; }}>
+            {["📘", "📸", "💬", "⭐"].map((icon, i) => (
+              <div
+                key={i}
+                role="presentation"
+                style={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: "50%",
+                  border: `1px solid rgba(201,204,209,0.18)`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  transition: "border-color 0.55s ease, box-shadow 0.55s ease",
+                  fontSize: 15,
+                  background: COLORS.glass,
+                  backdropFilter: "blur(10px)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = COLORS.neon;
+                  e.currentTarget.style.boxShadow = "0 0 26px rgba(179,18,36,0.35)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(201,204,209,0.18)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              >
                 {icon}
               </div>
             ))}
@@ -1507,27 +2266,47 @@ const Footer = ({ setPage }) => (
 
         {/* Quick Links */}
         <div>
-          <h4 style={{ fontFamily: "Jost", fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: COLORS.gold, marginBottom: 20 }}>Quick Links</h4>
-          {["home","menu","about","gallery","offers","blog","contact","book"].map(link => (
-            <button key={link} onClick={() => setPage(link)} style={{
-              display: "block", background: "none", border: "none", cursor: "pointer",
-              fontFamily: "Jost", fontSize: 13, color: COLORS.textLight, textAlign: "left",
-              padding: "5px 0", textTransform: "capitalize", transition: "color 0.3s",
-            }}
-            onMouseEnter={e => e.target.style.color = COLORS.gold}
-            onMouseLeave={e => e.target.style.color = COLORS.textLight}>
-              → {link === "book" ? "Book Table" : link.charAt(0).toUpperCase() + link.slice(1)}
+          <h4 style={{ fontFamily: "var(--font-body), sans-serif", fontSize: 10, letterSpacing: "0.34em", textTransform: "uppercase", color: COLORS.silver, marginBottom: 20 }}>Quick Links</h4>
+          {["home", "menu", "about", "gallery", "offers", "blog", "contact", "book"].map((link) => (
+            <button
+              key={link}
+              type="button"
+              onClick={() => setPage(link)}
+              style={{
+                display: "block",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontFamily: "var(--font-body), sans-serif",
+                fontSize: 13,
+                color: COLORS.smoke,
+                textAlign: "left",
+                padding: "7px 0",
+                textTransform: "capitalize",
+                transition: "color 0.45s ease, transform 0.45s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.color = COLORS.ivory;
+                e.target.style.transform = "translateX(6px)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.color = COLORS.smoke;
+                e.target.style.transform = "translateX(0)";
+              }}
+            >
+              <span style={{ color: COLORS.neon, marginRight: 8 }}>→</span>
+              {link === "book" ? "Book Table" : link.charAt(0).toUpperCase() + link.slice(1)}
             </button>
           ))}
         </div>
 
         {/* Contact */}
         <div>
-          <h4 style={{ fontFamily: "Jost", fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: COLORS.gold, marginBottom: 20 }}>Contact</h4>
-          <div style={{ fontSize: 13, color: COLORS.textLight, lineHeight: 2 }}>
+          <h4 style={{ fontFamily: "var(--font-body), sans-serif", fontSize: 10, letterSpacing: "0.34em", textTransform: "uppercase", color: COLORS.silver, marginBottom: 20 }}>Concierge</h4>
+          <div style={{ fontSize: 13, color: COLORS.smoke, lineHeight: 2 }}>
             <p>📍 {ADDRESS}</p>
-            <p>📞 <a href={`tel:${PHONE1}`} style={{ color: COLORS.textLight, textDecoration: "none" }}>{PHONE1}</a></p>
-            <p>📞 <a href={`tel:${PHONE2}`} style={{ color: COLORS.textLight, textDecoration: "none" }}>{PHONE2}</a></p>
+            <p>📞 <a href={`tel:${PHONE1}`} style={{ color: COLORS.silver, textDecoration: "none" }}>{PHONE1}</a></p>
+            <p>📞 <a href={`tel:${PHONE2}`} style={{ color: COLORS.silver, textDecoration: "none" }}>{PHONE2}</a></p>
             <p>⏰ 11:00 AM – 11:00 PM Daily</p>
           </div>
           <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
@@ -1535,29 +2314,28 @@ const Footer = ({ setPage }) => (
               <button className="btn-gold" style={{ width: "100%", padding: "10px 0", fontSize: 10 }}>📞 Call</button>
             </a>
             <a href={`https://wa.me/91${PHONE1}?text=${WA_MSG}`} target="_blank" rel="noreferrer" style={{ textDecoration: "none", flex: 1 }}>
-              <button style={{ width: "100%", padding: "10px 0", background: "#25D366", color: "#fff", border: "none", fontFamily: "Jost", fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer" }}>💬 WhatsApp</button>
+              <button style={{ width: "100%", padding: "10px 0", background: "#25D366", color: "#fff", border: "none", fontFamily: "var(--font-body), sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", cursor: "pointer", boxShadow: "0 0 20px rgba(37,211,102,0.28)" }}>💬 WhatsApp</button>
             </a>
           </div>
         </div>
 
         {/* Hours & Map Mini */}
         <div>
-          <h4 style={{ fontFamily: "Jost", fontSize: 10, letterSpacing: "0.3em", textTransform: "uppercase", color: COLORS.gold, marginBottom: 20 }}>Hours & Location</h4>
-          <div style={{ fontSize: 13, color: COLORS.textLight, marginBottom: 16 }}>
+          <h4 style={{ fontFamily: "var(--font-body), sans-serif", fontSize: 10, letterSpacing: "0.34em", textTransform: "uppercase", color: COLORS.silver, marginBottom: 20 }}>Hours & Location</h4>
+          <div style={{ fontSize: 13, color: COLORS.smoke, marginBottom: 16 }}>
             {["Monday–Sunday","11:00 AM","to 11:00 PM","Open Daily"].map((t, i) => (
-              <p key={i} style={{ padding: "4px 0", borderBottom: `1px solid rgba(201,168,76,0.08)` }}>{i === 0 ? "📅 " : ""}{t}</p>
+              <p key={i} style={{ padding: "4px 0", borderBottom: `1px solid rgba(179,18,36,0.1)` }}>{i === 0 ? "📅 " : ""}{t}</p>
             ))}
           </div>
-          <div style={{ height: 100, overflow: "hidden", borderRadius: 4 }}>
-            <iframe src="https://maps.google.com/maps?q=Holambi+Khurd+Delhi+110082&output=embed" width="100%" height="180" style={{ border: 0, marginTop: -40, filter: "invert(90%) hue-rotate(180deg) saturate(0.3)" }} title="Map" />
+          <div style={{ height: 100, overflow: "hidden", borderRadius: 6, border: "1px solid rgba(201,204,209,0.12)" }}>
+            <iframe src="https://maps.google.com/maps?q=Holambi+Khurd+Delhi+110082&output=embed" width="100%" height="180" style={{ border: 0, marginTop: -40, filter: "invert(92%) hue-rotate(185deg) saturate(0.25) brightness(0.85)" }} title="Map" />
           </div>
         </div>
       </div>
 
-      <GoldDivider style={{ marginBottom: 24 }} />
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-        <p style={{ fontSize: 11, color: COLORS.textLight }}>© 2025 Café Desire. All rights reserved. · Holambi Khurd, Delhi</p>
-        <p style={{ fontSize: 11, color: COLORS.textLight }}>Made with ❤️ for families of North Delhi</p>
+      <GoldDivider style={{ marginBottom: 26 }} />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
+        <p style={{ fontSize: 11, color: COLORS.smoke, letterSpacing: "0.06em" }}>© {new Date().getFullYear()} Café Desire · Holambi Khurd, Delhi</p>
       </div>
     </div>
   </footer>
@@ -1590,8 +2368,8 @@ export default function App() {
 
   return (
     <div style={{ minHeight: "100vh", background: COLORS.black }}>
-      <FontLoader />
       <GlobalStyle />
+      <CustomCursor />
       <Navbar page={page} setPage={navigateTo} />
       <main style={{ paddingBottom: 80 }}>
         {renderPage()}

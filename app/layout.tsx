@@ -1,21 +1,27 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cinzel, Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-body",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
+  variable: "--font-heading",
+});
+
+const cinzel = Cinzel({
+  subsets: ["latin"],
+  variable: "--font-logo",
 });
 
 export const metadata: Metadata = {
-  title: "Cafe Desire | Best Family Cafe in North Delhi",
-  description: "Visit Cafe Desire for pizza, pasta, burgers, momos, shakes and family dining near Holambi Khurd, North Delhi.",
-  keywords: ["Cafe Desire", "Cafe in North Delhi", "Best Cafe Delhi", "Pizza Cafe Delhi"],
+  title: "Café Desire | Fallen Angel Noir Lounge — North Delhi",
+  description:
+    "A cinematic luxury lounge in Holambi Khurd: pizza, pasta, burgers, momos, shakes, and late-night dining with an elite after-dark atmosphere.",
+  keywords: ["Cafe Desire", "Cafe in North Delhi", "Holambi Khurd", "Luxury lounge Delhi", "Pizza Cafe Delhi"],
 };
 
 export default function RootLayout({
@@ -26,7 +32,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${cormorant.variable} ${cinzel.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

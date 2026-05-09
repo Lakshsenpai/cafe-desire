@@ -1,26 +1,39 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --void: #050505;
+  --obsidian: #0e0e10;
+  --blood: #7a0c16;
+  --neon-crimson: #b31224;
+  --cold-silver: #c9ccd1;
+  --ivory-mist: #ece7df;
+  --smoke-grey: #6e6e73;
+  --glass: rgba(255, 255, 255, 0.05);
+  --background: var(--void);
+  --foreground: var(--ivory-mist);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--void);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% -30%, rgba(122, 12, 22, 0.35), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 100% 20%, rgba(179, 18, 36, 0.12), transparent 45%),
+    linear-gradient(180deg, var(--void) 0%, var(--obsidian) 45%, var(--void) 100%);
+  background-attachment: fixed;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading), "Cormorant Garamond", serif;
+}
+
+.font-logo {
+  font-family: var(--font-logo), "Cinzel", var(--font-heading), serif;
 }
