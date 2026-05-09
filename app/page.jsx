@@ -487,6 +487,86 @@ const GlobalStyle = () => (
       mix-blend-mode: screen;
     }
 
+    /* Hero: clear fixed navbar, no clipping, centered in viewport */
+    :root {
+      --hero-nav-pad: clamp(5.25rem, 11vw + 1.25rem, 7rem);
+    }
+    .hero-noir-section {
+      box-sizing: border-box;
+      position: relative;
+      width: 100%;
+      max-width: 100vw;
+      min-height: 100vh;
+      min-height: 100svh;
+      min-height: 100dvh;
+      padding-top: calc(var(--hero-nav-pad) + env(safe-area-inset-top, 0px));
+      padding-bottom: clamp(2.5rem, 6vh, 4rem);
+      padding-left: clamp(16px, 4vw, 40px);
+      padding-right: clamp(16px, 4vw, 40px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: clip;
+      overflow-y: visible;
+    }
+    .hero-noir-inner {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      max-width: 1040px;
+      margin-left: auto;
+      margin-right: auto;
+      flex: 0 1 auto;
+      text-align: center;
+    }
+    .hero-noir-label.section-label {
+      flex-wrap: wrap;
+      justify-content: center;
+      text-align: center;
+      row-gap: 8px;
+      max-width: 100%;
+      padding: 0 4px;
+    }
+    .hero-noir-label.section-label::before,
+    .hero-noir-label.section-label::after {
+      flex: 1 1 32px;
+      max-width: 56px;
+    }
+    @media (max-width: 640px) {
+      .hero-noir-label.section-label::before,
+      .hero-noir-label.section-label::after {
+        display: none;
+      }
+    }
+    .hero-noir-title {
+      font-size: clamp(4rem, 10vw, 11rem);
+      line-height: 1.08;
+      letter-spacing: 0.22em;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0.08em 0 0.06em;
+      overflow: visible;
+      text-wrap: balance;
+    }
+    @media (max-width: 900px) {
+      .hero-noir-title {
+        letter-spacing: 0.14em;
+        font-size: clamp(3.25rem, 9.5vw, 9rem);
+      }
+    }
+    @media (max-width: 480px) {
+      .hero-noir-title {
+        letter-spacing: 0.08em;
+        font-size: clamp(2.75rem, 11vw, 5.5rem);
+        line-height: 1.1;
+      }
+      :root {
+        --hero-nav-pad: clamp(4.75rem, 18vw, 5.75rem);
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *,
       *::before,
@@ -883,7 +963,7 @@ const HomePage = ({ setPage }) => {
   return (
     <div>
       {/* ── HERO — Fallen Angel Noir ── */}
-      <section style={{ position: "relative", height: "100vh", minHeight: 620, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <section className="hero-noir-section">
         <div
           className="hero-gradient-drift"
           style={{
@@ -982,32 +1062,25 @@ const HomePage = ({ setPage }) => {
 
         {/* Hero copy */}
         <div
+          className="hero-noir-inner"
           style={{
-            position: "relative",
-            zIndex: 3,
-            textAlign: "center",
-            padding: "0 clamp(16px, 4vw, 40px)",
-            maxWidth: 1040,
-            transform: `translate(${ambient.mx * -10}px, ${ambient.my * -6}px) translateY(${ambient.sy * 0.05}px)`,
+            transform: `translate(${ambient.mx * -8}px, ${ambient.my * -4}px) translateY(${ambient.sy * 0.035}px)`,
             transition: "transform 0.18s cubic-bezier(0.22,1,0.36,1)",
           }}
         >
           <div
-            className="section-label"
-            style={{ justifyContent: "center", marginBottom: 26, animation: "fadeIn 1.2s cubic-bezier(0.22,1,0.36,1) 0.15s both" }}
+            className="section-label hero-noir-label"
+            style={{ justifyContent: "center", marginBottom: "clamp(18px, 3vh, 26px)", animation: "fadeIn 1.2s cubic-bezier(0.22,1,0.36,1) 0.15s both" }}
           >
             Private Lounge Aura · Est. After Dark · Holambi Khurd
           </div>
 
           <h1
-            className="font-logo"
+            className="font-logo hero-noir-title"
             style={{
               fontWeight: 400,
-              fontSize: "clamp(40px, 11vw, 138px)",
-              lineHeight: 0.94,
-              letterSpacing: "0.22em",
               color: COLORS.ivory,
-              marginBottom: 28,
+              marginBottom: "clamp(20px, 3vh, 28px)",
               textTransform: "uppercase",
               textShadow:
                 `0 0 80px rgba(122,12,22,0.45), 0 0 2px rgba(236,231,223,0.35), 0 24px 90px rgba(0,0,0,0.85)`,
@@ -1115,11 +1188,12 @@ const HomePage = ({ setPage }) => {
         <div
           style={{
             position: "absolute",
-            bottom: 28,
+            bottom: "max(20px, env(safe-area-inset-bottom, 0px))",
             left: "50%",
             transform: "translateX(-50%)",
             animation: "float 3.2s ease-in-out infinite",
             zIndex: 4,
+            pointerEvents: "none",
           }}
         >
           <div
