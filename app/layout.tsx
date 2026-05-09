@@ -20,8 +20,15 @@ const cinzel = Cinzel({
 export const metadata: Metadata = {
   title: "Café Desire | Fallen Angel Noir Lounge — North Delhi",
   description:
-    "A cinematic luxury lounge in Holambi Khurd: pizza, pasta, burgers, momos, shakes, and late-night dining with an elite after-dark atmosphere.",
-  keywords: ["Cafe Desire", "Cafe in North Delhi", "Holambi Khurd", "Luxury lounge Delhi", "Pizza Cafe Delhi"],
+    "A 100% pure vegetarian luxury lounge in Holambi Khurd: pizza, pasta, gourmet burgers, momos, shakes, and late-night dining with an elite after-dark atmosphere.",
+  keywords: [
+    "Cafe Desire",
+    "Pure vegetarian cafe Delhi",
+    "Veg cafe North Delhi",
+    "Holambi Khurd",
+    "Luxury lounge Delhi",
+    "Pizza Cafe Delhi",
+  ],
 };
 
 export default function RootLayout({

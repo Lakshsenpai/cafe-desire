@@ -918,29 +918,29 @@ const HomePage = ({ setPage }) => {
 
   const categories = [
     { emoji: "🍕", name: "Pizza", desc: "Wood-fired perfection" },
-    { emoji: "🍔", name: "Burgers", desc: "Loaded & saucy" },
+    { emoji: "🍔", name: "Burgers", desc: "Gourmet veg stacks" },
     { emoji: "🥟", name: "Momos", desc: "Steamed & fried" },
     { emoji: "🍜", name: "Chinese", desc: "Wok-tossed flavors" },
-    { emoji: "🍗", name: "Tandoori", desc: "Clay oven magic" },
+    { emoji: "🫓", name: "Tandoori", desc: "Clay oven paneer & veg" },
     { emoji: "🥤", name: "Shakes", desc: "Thick & creamy" },
     { emoji: "☕", name: "Coffee", desc: "Brewed with love" },
     { emoji: "🍰", name: "Desserts", desc: "Sweet endings" },
   ];
 
   const dishes = [
-    { name: "Butter Chicken Pizza", price: "₹249", tag: "Bestseller", cat: "Pizza", emoji: "🍕", desc: "Creamy butter chicken sauce, mozzarella, capsicum on crispy base" },
-    { name: "Peri Peri Burger", price: "₹149", tag: "🔥 Hot", cat: "Burger", emoji: "🍔", desc: "Spicy peri peri patty, crisp lettuce, special sauce" },
-    { name: "Steamed Momos", price: "₹99", tag: "Veg", cat: "Momos", emoji: "🥟", desc: "Classic steamed momos with signature chutney, 8 pcs" },
-    { name: "Hakka Noodles", price: "₹129", tag: "Veg", cat: "Chinese", emoji: "🍜", desc: "Wok-tossed hakka noodles with fresh vegetables" },
-    { name: "Malai Tikka", price: "₹219", tag: "Must Try", cat: "Tandoori", emoji: "🍗", desc: "Creamy marinated chicken tikka from clay oven" },
-    { name: "Oreo Shake", price: "₹119", tag: "Fan Fav", cat: "Shakes", emoji: "🥤", desc: "Thick oreo milkshake topped with whipped cream" },
+    { name: "Paneer Makhani Pizza", price: "₹249", tag: "Bestseller", cat: "Pizza", emoji: "🍕", desc: "Silky makhani gravy, mozzarella, paneer, capsicum on a crisp base" },
+    { name: "Peri Peri Veg Burger", price: "₹149", tag: "🔥 Hot", cat: "Burger", emoji: "🍔", desc: "Spicy peri peri cottage-cheese patty, crisp lettuce, house sauce" },
+    { name: "Steamed Momos", price: "₹99", tag: "Classic", cat: "Momos", emoji: "🥟", desc: "Classic veg-filled steamed momos with signature chutney, 8 pcs" },
+    { name: "Hakka Noodles", price: "₹129", tag: "Chef's Pick", cat: "Chinese", emoji: "🍜", desc: "Wok-tossed hakka noodles with garden-fresh vegetables" },
+    { name: "Malai Paneer Tikka", price: "₹219", tag: "Must Try", cat: "Tandoori", emoji: "🫓", desc: "Creamy marinated paneer tikka, kissed by the clay oven" },
+    { name: "Oreo Shake", price: "₹119", tag: "Fan Fav", cat: "Shakes", emoji: "🥤", desc: "Thick Oreo milkshake topped with whipped cream" },
   ];
 
   const testimonials = [
-    { name: "Priya Sharma", loc: "Rohini, Delhi", stars: 5, text: "Absolutely loved the food! The butter chicken pizza is divine. Staff was super friendly and ambience is perfect for family outings." },
-    { name: "Rahul Verma", loc: "Alipur, Delhi", stars: 5, text: "Best cafe near DIRD College. The momos are outstanding and prices are very reasonable. Will definitely come back!" },
+    { name: "Priya Sharma", loc: "Rohini, Delhi", stars: 5, text: "Absolutely loved the food! The paneer makhani pizza is divine — and knowing it's a pure vegetarian kitchen puts the whole family at ease. Stunning ambience." },
+    { name: "Rahul Verma", loc: "Alipur, Delhi", stars: 5, text: "Best pure veg cafe near DIRD College. The momos are outstanding and prices are very reasonable. Will definitely come back!" },
     { name: "Sneha Gupta", loc: "Bawana, Delhi", stars: 5, text: "Celebrated my birthday here and it was magical. The team decorated the table beautifully. Best memories ever!" },
-    { name: "Amit Kumar", loc: "Holambi Khurd", stars: 5, text: "My go-to cafe! The malai tikka and shakes are incredible. Cozy seating, fast service. Highly recommend!" },
+    { name: "Amit Kumar", loc: "Holambi Khurd", stars: 5, text: "My go-to cafe! The malai paneer tikka and shakes are incredible — premium veg cafe vibes. Cozy seating, fast service. Highly recommend!" },
   ];
 
   const faqs = [
@@ -948,13 +948,14 @@ const HomePage = ({ setPage }) => {
     { q: "Do you offer home delivery?", a: "Yes! Order directly on WhatsApp for the freshest food. We also deliver via Zomato & Swiggy." },
     { q: "Can you arrange birthday parties?", a: "Absolutely! We offer special birthday packages with decoration, cake, and group meals. Contact us to customize your celebration." },
     { q: "Do you accept advance table reservations?", a: "Yes, you can book tables in advance via our Book Table page or by calling/WhatsApp." },
-    { q: "Is the food halal?", a: "Yes, all our meat products are 100% halal certified." },
+    { q: "Is Café Desire vegetarian?", a: "Yes, Café Desire is a 100% pure vegetarian café serving fresh and curated vegetarian dishes." },
+    { q: "Do you serve meat, fish, or seafood?", a: "No. Our kitchen is entirely meat-free — only fresh vegetarian cuisine, crafted for families and late-night lounging alike." },
   ];
 
   const whyUs = [
-    { icon: "🌿", title: "Fresh Ingredients", desc: "Sourced daily from trusted local vendors" },
+    { icon: "🌿", title: "Fresh Ingredients", desc: "Sourced daily from trusted local vendors — premium veg taste, honest prices" },
+    { icon: "🌱", title: "100% Vegetarian", desc: "Pure veg kitchen — curated plates, no meat, ever" },
     { icon: "👨‍🍳", title: "Expert Chefs", desc: "Trained with years of culinary passion" },
-    { icon: "💰", title: "Affordable Prices", desc: "Premium taste without premium pricing" },
     { icon: "🏠", title: "Family Friendly", desc: "Welcoming space for all ages" },
     { icon: "⚡", title: "Fast Service", desc: "Quick turnaround, never a long wait" },
     { icon: "✨", title: "Hygienic Kitchen", desc: "Spotless preparation, always fresh" },
@@ -1340,7 +1341,7 @@ const HomePage = ({ setPage }) => {
               </div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              {["🍕","🍔","🥟","🍗"].map((e, i) => (
+              {["🍕","🍔","🥟","🫓"].map((e, i) => (
                 <div key={i} className="reveal card-hover" style={{
                   aspectRatio: "1", background: `linear-gradient(135deg, ${COLORS.black}, ${COLORS.brownMid})`,
                   border: `1px solid rgba(201,168,76,0.15)`,
@@ -1479,37 +1480,37 @@ const MenuPage = () => {
   const menuItems = [
     // Pizza
     { cat: "Pizza", name: "Margherita Pizza", price: "₹199", desc: "Classic tomato sauce, mozzarella, fresh basil", veg: true },
-    { cat: "Pizza", name: "Butter Chicken Pizza", price: "₹249", desc: "Creamy butter chicken, mozzarella, capsicum", veg: false, tag: "Bestseller" },
+    { cat: "Pizza", name: "Paneer Makhani Pizza", price: "₹249", desc: "Silky makhani gravy, mozzarella, paneer, capsicum", veg: true, tag: "Bestseller" },
     { cat: "Pizza", name: "Paneer Tikka Pizza", price: "₹229", desc: "Spiced paneer tikka, onion, peppers on crispy base", veg: true, tag: "Must Try" },
-    { cat: "Pizza", name: "Double Cheese Pepperoni", price: "₹279", desc: "Extra mozzarella, pepperoni, oregano drizzle", veg: false },
-    { cat: "Pizza", name: "BBQ Chicken Pizza", price: "₹259", desc: "Smoky BBQ sauce, grilled chicken, caramelized onion", veg: false },
+    { cat: "Pizza", name: "Double Cheese Feast", price: "₹279", desc: "Extra mozzarella, cheddar, herb oil, oregano drizzle", veg: true },
+    { cat: "Pizza", name: "BBQ Paneer Pizza", price: "₹259", desc: "Smoky BBQ sauce, tandoori paneer, caramelized onion", veg: true },
     { cat: "Pizza", name: "Mushroom Delight", price: "₹219", desc: "Wild mushrooms, pesto, sun-dried tomatoes", veg: true },
     // Burgers
-    { cat: "Burgers", name: "Peri Peri Burger", price: "₹149", desc: "Spicy peri peri patty, crisp lettuce, special sauce", veg: false, tag: "🔥 Hot" },
+    { cat: "Burgers", name: "Peri Peri Veg Burger", price: "₹149", desc: "Spicy peri peri cottage-cheese patty, crisp lettuce, special sauce", veg: true, tag: "🔥 Hot" },
     { cat: "Burgers", name: "Classic Veg Burger", price: "₹119", desc: "Crispy veg patty, fresh veggies, chipotle mayo", veg: true },
-    { cat: "Burgers", name: "Chicken Zinger", price: "₹169", desc: "Crispy fried chicken, coleslaw, mustard sauce", veg: false, tag: "Bestseller" },
-    { cat: "Burgers", name: "Double Smash Burger", price: "₹199", desc: "Double beef smash patty, American cheese, pickles", veg: false },
+    { cat: "Burgers", name: "Crispy Paneer Zinger", price: "₹169", desc: "Crispy fried paneer, coleslaw, mustard sauce", veg: true, tag: "Bestseller" },
+    { cat: "Burgers", name: "Double Smash Veg Burger", price: "₹199", desc: "Double veg smash patties, American cheese, pickles", veg: true },
     { cat: "Burgers", name: "Mushroom Swiss Burger", price: "₹159", desc: "Sautéed mushrooms, Swiss cheese, garlic aioli", veg: true },
     // Wraps
-    { cat: "Wraps", name: "Chicken Tikka Wrap", price: "₹149", desc: "Grilled chicken tikka, mint chutney, onion rings", veg: false },
+    { cat: "Wraps", name: "Paneer Tikka Wrap", price: "₹149", desc: "Grilled paneer tikka, mint chutney, onion rings", veg: true },
     { cat: "Wraps", name: "Paneer Kathi Roll", price: "₹129", desc: "Tandoori paneer, veggies, coriander mint chutney", veg: true, tag: "Popular" },
-    { cat: "Wraps", name: "BBQ Beef Wrap", price: "₹159", desc: "Smoky BBQ beef, caramelized onions, cheese", veg: false },
+    { cat: "Wraps", name: "BBQ Paneer Wrap", price: "₹159", desc: "Smoky BBQ paneer, caramelized onions, cheese", veg: true },
     // Chinese
     { cat: "Chinese", name: "Hakka Noodles", price: "₹129", desc: "Classic wok-tossed hakka noodles with vegetables", veg: true },
-    { cat: "Chinese", name: "Chicken Fried Rice", price: "₹149", desc: "Wok-fried rice with chicken, egg, spring onion", veg: false, tag: "Bestseller" },
+    { cat: "Chinese", name: "Veg Fried Rice", price: "₹149", desc: "Wok-fried rice with seasonal vegetables, spring onion", veg: true, tag: "Bestseller" },
     { cat: "Chinese", name: "Chilli Paneer (Dry)", price: "₹169", desc: "Crispy paneer tossed in spicy Indo-Chinese sauce", veg: true },
-    { cat: "Chinese", name: "Chicken Manchurian", price: "₹179", desc: "Crispy chicken in tangy Manchurian gravy", veg: false },
+    { cat: "Chinese", name: "Veg Manchurian", price: "₹179", desc: "Crispy vegetable balls in tangy Manchurian gravy", veg: true },
     { cat: "Chinese", name: "Veg Spring Rolls (6 pcs)", price: "₹119", desc: "Crispy rolls filled with cabbage, carrot, mushroom", veg: true },
     // Momos
     { cat: "Momos", name: "Steamed Veg Momos (8 pcs)", price: "₹99", desc: "Classic steamed momos with signature chutney", veg: true, tag: "Fan Fav" },
-    { cat: "Momos", name: "Steamed Chicken Momos (8 pcs)", price: "₹119", desc: "Juicy chicken momos, steamed to perfection", veg: false },
+    { cat: "Momos", name: "Corn & Cheese Momos (8 pcs)", price: "₹119", desc: "Sweet corn and cheese filling, steamed to perfection", veg: true },
     { cat: "Momos", name: "Fried Paneer Momos (8 pcs)", price: "₹129", desc: "Crispy fried paneer momos with spicy dip", veg: true },
-    { cat: "Momos", name: "Tandoori Chicken Momos (6 pcs)", price: "₹139", desc: "Smoked in tandoor, served with onion & lemon", veg: false, tag: "Must Try" },
+    { cat: "Momos", name: "Tandoori Veg Momos (6 pcs)", price: "₹139", desc: "Smoked in tandoor, served with onion & lemon", veg: true, tag: "Must Try" },
     // Tandoori
-    { cat: "Tandoori", name: "Malai Tikka", price: "₹219", desc: "Creamy marinated chicken from clay oven, 6 pcs", veg: false, tag: "Must Try" },
+    { cat: "Tandoori", name: "Malai Paneer Tikka", price: "₹219", desc: "Creamy marinated paneer from clay oven, 6 pcs", veg: true, tag: "Must Try" },
     { cat: "Tandoori", name: "Paneer Tikka", price: "₹199", desc: "Marinated cottage cheese grilled in tandoor, 6 pcs", veg: true, tag: "Popular" },
-    { cat: "Tandoori", name: "Seekh Kebab", price: "₹229", desc: "Minced chicken seekh kebab, mint chutney, 4 pcs", veg: false },
-    { cat: "Tandoori", name: "Chicken Tikka", price: "₹239", desc: "Classic Punjabi chicken tikka, 6 pcs", veg: false },
+    { cat: "Tandoori", name: "Veg Seekh Kebab", price: "₹229", desc: "Spiced vegetable seekh, mint chutney, 4 pcs", veg: true },
+    { cat: "Tandoori", name: "Achari Soya Chaap", price: "₹239", desc: "Pickle-marinated soya chaap tikka from the tandoor, 6 pcs", veg: true },
     // Coffee
     { cat: "Coffee", name: "Cafe Latte", price: "₹99", desc: "Smooth espresso with velvety steamed milk", veg: true },
     { cat: "Coffee", name: "Cold Coffee", price: "₹89", desc: "Chilled coffee blended with milk & ice cream", veg: true, tag: "Popular" },
@@ -1525,7 +1526,7 @@ const MenuPage = () => {
     { cat: "Desserts", name: "Waffle Stack", price: "₹149", desc: "Belgian waffles, whipped cream, mixed berry compote", veg: true },
     { cat: "Desserts", name: "Gulab Jamun", price: "₹79", desc: "Soft gulab jamun soaked in rose sugar syrup, 4 pcs", veg: true },
     // Combos
-    { cat: "Combos", name: "Family Meal Combo", price: "₹499", desc: "2 Pizzas + 4 Burgers + 2 Shakes + Fries", veg: false, tag: "Best Value" },
+    { cat: "Combos", name: "Family Meal Combo", price: "₹499", desc: "2 Pizzas + 4 Gourmet Veg Burgers + 2 Shakes + Fries", veg: true, tag: "Best Value" },
     { cat: "Combos", name: "Date Night Combo", price: "₹399", desc: "Pizza + 2 Momos + 2 Coffee + Dessert", veg: true, tag: "Popular" },
     { cat: "Combos", name: "Momo Mania Combo", price: "₹249", desc: "2 Plates Momos + 2 Cold Coffee + Fries", veg: true },
   ];
@@ -1542,7 +1543,7 @@ const MenuPage = () => {
           Our <span style={{ color: COLORS.gold, fontStyle: "italic" }}>Menu</span>
         </h1>
         <p style={{ color: COLORS.textLight, marginTop: 12, fontFamily: "Jost", letterSpacing: "0.05em" }}>
-          Fresh ingredients · Made to order · Served with love
+          100% pure vegetarian · Fresh ingredients · Made to order · Curated veg cuisine
         </p>
       </section>
 
@@ -1624,10 +1625,10 @@ const AboutPage = () => {
               Born from a love of <span style={{ color: COLORS.gold, fontStyle: "italic" }}>great food</span>
             </h2>
             <p className="reveal" style={{ color: COLORS.textLight, lineHeight: 1.9, marginBottom: 20 }}>
-              Café Desire was founded with a simple mission: bring premium restaurant-quality food to everyday families in North Delhi. Nestled in the heart of Holambi Khurd, we've become the neighborhood's most beloved dining spot.
+              Café Desire was founded with a simple mission: bring premium, 100% pure vegetarian dining to everyday families in North Delhi. Nestled in the heart of Holambi Khurd, we've become the neighborhood's most beloved pure veg café and lounge.
             </p>
             <p className="reveal" style={{ color: COLORS.textLight, lineHeight: 1.9, marginBottom: 32 }}>
-              Every dish we serve reflects our commitment to freshness, flavor, and affordability. Our kitchen operates with the highest standards of hygiene, and our chefs bring years of culinary training to your table every single day.
+              Every dish we serve reflects our commitment to freshness, flavor, and affordability — with a meat-free kitchen you can trust. Our team operates with the highest standards of hygiene, and our chefs bring years of culinary training to your table every single day.
             </p>
             <GoldDivider style={{ marginBottom: 32, maxWidth: 300 }} />
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
@@ -1646,6 +1647,7 @@ const AboutPage = () => {
           </div>
           <div style={{ display: "grid", gap: 16 }}>
             {[
+              { icon: "🌱", t: "Pure Vegetarian", d: "We are a 100% vegetarian kitchen — fresh, curated veg cuisine with no meat, fish, or seafood." },
               { icon: "🌿", t: "Fresh Every Day", d: "We source our ingredients daily from trusted local vendors, ensuring peak freshness in every dish." },
               { icon: "🧹", t: "Hygienic Kitchen", d: "Our kitchen is maintained to the highest cleanliness standards, certified and inspected regularly." },
               { icon: "👨‍👩‍👧‍👦", t: "Family Atmosphere", d: "We create a warm, welcoming environment where families can relax and make memories." },
@@ -1669,7 +1671,7 @@ const AboutPage = () => {
             Our <span style={{ color: COLORS.gold, fontStyle: "italic" }}>Mission</span>
           </h2>
           <p className="reveal" style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "clamp(18px, 2.5vw, 24px)", fontStyle: "italic", color: COLORS.beige, lineHeight: 1.8 }}>
-            "To serve every guest the finest food at the most honest prices, in a space that feels like home — because at Café Desire, you're not just a customer, you're family."
+            "To serve every guest the finest pure vegetarian food at the most honest prices, in a space that feels like home — because at Café Desire, you're not just a customer, you're family."
           </p>
           <GoldDivider style={{ margin: "40px auto", maxWidth: 300 }} />
           <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
@@ -1692,12 +1694,12 @@ const GalleryPage = () => {
 
   const items = [
     { cat: "Food", emoji: "🍕", title: "Pizza Collection", bg: "#3b1500" },
-    { cat: "Food", emoji: "🍔", title: "Burger Tower", bg: "#2a1200" },
+    { cat: "Food", emoji: "🍔", title: "Veg Burger Spread", bg: "#2a1200" },
     { cat: "Ambience", emoji: "🕯️", title: "Evening Warmth", bg: "#1a0a00" },
     { cat: "Food", emoji: "🥟", title: "Momo Platters", bg: "#3b2000" },
     { cat: "Celebrations", emoji: "🎂", title: "Birthday Bliss", bg: "#2a1800" },
     { cat: "Seating", emoji: "🪑", title: "Cozy Seating", bg: "#201000" },
-    { cat: "Food", emoji: "🍗", title: "Tandoori Platter", bg: "#3a1600" },
+    { cat: "Food", emoji: "🫓", title: "Tandoori & Paneer", bg: "#3a1600" },
     { cat: "Family", emoji: "👨‍👩‍👧‍👦", title: "Family Moments", bg: "#2b1400" },
     { cat: "Food", emoji: "🥤", title: "Shake Station", bg: "#1e1000" },
     { cat: "Ambience", emoji: "✨", title: "Café Interior", bg: "#301a08" },
@@ -2022,7 +2024,7 @@ const BookTablePage = () => {
             </div>
             <div style={{ marginBottom: 24 }}>
               <label style={{ display: "block", fontFamily: "var(--font-body), sans-serif", fontSize: 10, letterSpacing: "0.26em", textTransform: "uppercase", color: COLORS.silver, marginBottom: 8 }}>Special Requests / Notes</label>
-              <textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder="Any dietary requirements, special decoration requests, etc." rows={4} style={{ ...inputStyle, resize: "vertical" }} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={(e) => (e.target.style.borderColor = "rgba(201,204,209,0.14)")} />
+              <textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder="Notes for our team (100% vegetarian kitchen). Allergies, celebrations, seating preferences, etc." rows={4} style={{ ...inputStyle, resize: "vertical" }} onFocus={e => e.target.style.borderColor = COLORS.gold} onBlur={(e) => (e.target.style.borderColor = "rgba(201,204,209,0.14)")} />
             </div>
             <button className="btn-gold" onClick={handleSubmit} style={{ width: "100%", padding: "18px", fontSize: 12 }}>
               📅 Confirm Reservation via WhatsApp
@@ -2063,7 +2065,7 @@ const OffersPage = ({ setPage }) => {
     { emoji: "🎂", title: "Birthday Party Package", price: "₹1,499", orig: "₹2,200", discount: "32% OFF", desc: "Table for 6 · Decoration · Birthday Cake · 6 Combo Meals · Special dessert", tag: "Celebration", valid: "Book 2 days prior" },
     { emoji: "🍕", title: "Pizza Party Duo", price: "₹349", orig: "₹450", discount: "22% OFF", desc: "2 Medium Pizzas + 2 Cold Coffees + 1 Garlic Bread", tag: "Great Deal", valid: "Daily" },
     { emoji: "🌙", title: "Evening Combo", price: "₹299", orig: "₹380", discount: "21% OFF", desc: "Momos + Chinese Main + 2 Beverages. Perfect evening plan!", tag: "Evening Special", valid: "5 PM – 9 PM" },
-    { emoji: "🎉", title: "Group Celebration Pack", price: "Custom", orig: null, discount: null, desc: "Catering for 20+ guests. Custom menu. Special decorations. Great pricing.", tag: "Group Offer", valid: "Pre-booking required" },
+    { emoji: "🎉", title: "Group Celebration Pack", price: "Custom", orig: null, discount: null, desc: "Catering for 20+ guests. Custom pure vegetarian menu. Special decorations. Great pricing.", tag: "Group Offer", valid: "Pre-booking required" },
   ];
 
   const coupons = ["DESIRE10", "FAMILY20", "BDAY15", "PIZZA25"];
@@ -2145,7 +2147,7 @@ const BlogPage = ({ setPage }) => {
       title: "Best Cafe in North Delhi: Why Café Desire Leads the Pack",
       category: "Café Culture",
       date: "April 15, 2025",
-      excerpt: "Discover why thousands of families in North Delhi choose Café Desire for their dining experience. From award-winning pizza to legendary momos...",
+      excerpt: "Discover why thousands of families in North Delhi choose Café Desire — a 100% pure vegetarian lounge with award-winning pizza, legendary momos, and late-night ambience...",
       readTime: "4 min read",
       emoji: "☕"
     },
@@ -2154,7 +2156,7 @@ const BlogPage = ({ setPage }) => {
       title: "Best Pizza Near Holambi Khurd: A Complete Guide",
       category: "Food Guide",
       date: "March 28, 2025",
-      excerpt: "If you're searching for the best pizza near Holambi Khurd, DIRD College, or Alipur, your search ends here. Café Desire serves Delhi's most-loved pizzas...",
+      excerpt: "If you're searching for the best pure veg pizza near Holambi Khurd, DIRD College, or Alipur, your search ends here. Café Desire serves Delhi's most-loved vegetarian pizzas...",
       readTime: "5 min read",
       emoji: "🍕"
     },
@@ -2163,16 +2165,16 @@ const BlogPage = ({ setPage }) => {
       title: "Affordable Family Cafe in Delhi: Premium Food, Honest Prices",
       category: "Family Dining",
       date: "March 10, 2025",
-      excerpt: "Looking for a premium dining experience that doesn't break the bank? Café Desire offers restaurant-quality food at everyday prices for families across Delhi...",
+      excerpt: "Looking for a premium pure vegetarian dining experience that doesn't break the bank? Café Desire offers restaurant-quality veg food at everyday prices for families across Delhi...",
       readTime: "3 min read",
       emoji: "👨‍👩‍👧‍👦"
     },
     {
       slug: "best-momos-north-delhi",
-      title: "Best Momos in North Delhi: Steamed, Fried & Tandoori",
+      title: "Best Veg Momos in North Delhi: Steamed, Fried & Tandoori",
       category: "Food Guide",
       date: "February 20, 2025",
-      excerpt: "From classic steamed to smoky tandoori — our momo varieties have made Café Desire the top momo destination in North Delhi's Holambi Khurd area...",
+      excerpt: "From classic steamed veg to smoky tandoori — our momo varieties have made Café Desire the top pure vegetarian momo spot in North Delhi's Holambi Khurd area...",
       readTime: "4 min read",
       emoji: "🥟"
     },
@@ -2190,7 +2192,7 @@ const BlogPage = ({ setPage }) => {
       title: "Late Night Food Near Me in Delhi: Open Till 11 PM Daily",
       category: "Night Life",
       date: "January 18, 2025",
-      excerpt: "Craving good food late at night near Holambi Khurd or DIRD College? Café Desire is open until 11 PM every single day, serving fresh hot food...",
+      excerpt: "Craving great pure veg food late at night near Holambi Khurd or DIRD College? Café Desire is open until 11 PM every single day, serving fresh hot vegetarian plates...",
       readTime: "3 min read",
       emoji: "🌙"
     },
